@@ -85,10 +85,14 @@ a{color:inherit}
 .hero .ph{position:absolute;inset:0;background:var(--a);z-index:0}
 .hero .ph img{width:100%;height:100%;object-fit:cover;object-position:50% 18%;filter:grayscale(1) contrast(1.15) brightness(.95);mix-blend-mode:multiply;display:block}
 .hero .ph::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(5,5,7,.35) 0%,rgba(5,5,7,0) 28%,var(--bg) 80%)}
+.ph.art::after{background:linear-gradient(180deg,rgba(5,5,7,0) 0%,rgba(5,5,7,0) 45%,var(--bg) 82%)}
 .hero .in{position:relative;z-index:1;max-width:600px;width:100%;margin:0 auto}
 .ph.col{background:var(--bg)}
 .ph.col img{filter:none !important;mix-blend-mode:normal !important}
-.ph.art{background:var(--bg)}
+.ph.art,.slide.poster .ph.art,.hero .ph.art{background:var(--bg)}
+.slide.poster .ph.art{top:auto;bottom:0;height:60%}
+.slide.poster .ph.art svg{opacity:.6}
+.hero .dn.long{font-size:clamp(2.6rem,14vw,4.4rem)}
 .ph.art svg{position:absolute;inset:0;width:100%;height:100%;display:block}
 .heroes{display:flex;gap:6px;flex-wrap:wrap;margin:8px 0 4px}
 .heroes img{width:54px;height:72px;object-fit:cover;border-radius:8px;box-shadow:inset 0 0 0 1px var(--line)}
@@ -1128,24 +1132,26 @@ const ALT={"incline-db":{"name":"Incline barbell press","how":"Bench at 30\u00b0
   const heroEl = $("#hero");
   /* hero backgrounds: the person's own photos (on this phone only), else original match-night art */
   const HERO = { imgs: S.get("hw3:heroes", []) || [], get col() { return S.get("hw3:heroc", true); }, set col(v) { S.set("hw3:heroc", !!v); } };
-  const NUMS = [7, 10, 8];
+  const LEGENDS = [[7, "RONALDO"], [10, "MODRI\u0106"], [8, "KROOS"]];
   function matchArt(i) {
-    const n = NUMS[i % 3], id = "ma" + i;
-    return '<svg viewBox="0 0 390 600" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><defs>' +
-      '<radialGradient id="' + id + 'l" cx="50%" cy="0%" r="75%"><stop offset="0" stop-color="var(--a)" stop-opacity=".55"/><stop offset=".55" stop-color="var(--a)" stop-opacity=".08"/><stop offset="1" stop-color="var(--a)" stop-opacity="0"/></radialGradient>' +
-      '<linearGradient id="' + id + 'g" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#0B0C10"/><stop offset="1" stop-color="#050507"/></linearGradient></defs>' +
-      '<rect width="390" height="600" fill="url(#' + id + 'g)"/>' +
-      '<rect width="390" height="600" fill="url(#' + id + 'l)"/>' +
-      /* pitch in perspective, seen from the stand */
-      '<g fill="none" stroke="#fff" stroke-opacity=".16" stroke-width="2">' +
-      '<path d="M40 560 L110 215 L280 215 L350 560 Z"/><path d="M82 560 L145 215"/><path d="M308 560 L245 215"/>' +
-      '<path d="M63 460 L327 460"/><ellipse cx="195" cy="460" rx="52" ry="18"/><circle cx="195" cy="460" r="3" fill="#fff" fill-opacity=".5"/>' +
-      '<path d="M120 215 L112 190 L278 190 L270 215"/><path d="M105 560 L96 600 M285 560 L294 600"/></g>' +
+    const L = LEGENDS[i % 3], id = "ma" + i, gold = "#E8C872";
+    return '<svg viewBox="0 0 390 600" preserveAspectRatio="xMidYMin slice" aria-hidden="true"><defs>' +
+      '<linearGradient id="' + id + 'g" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#0D0D12"/><stop offset="1" stop-color="#050507"/></linearGradient>' +
+      '<radialGradient id="' + id + 'l" cx="50%" cy="0%" r="80%"><stop offset="0" stop-color="' + gold + '" stop-opacity=".5"/><stop offset=".5" stop-color="' + gold + '" stop-opacity=".08"/><stop offset="1" stop-color="' + gold + '" stop-opacity="0"/></radialGradient>' +
+      '<filter id="' + id + 'b" x="-50%" y="-100%" width="200%" height="300%"><feGaussianBlur stdDeviation="12"/></filter><linearGradient id="' + id + 'n" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff"/><stop offset="1" stop-color="#fff" stop-opacity=".82"/></linearGradient></defs>' +
+      '<rect width="390" height="600" fill="url(#' + id + 'g)"/><rect width="390" height="600" fill="url(#' + id + 'l)"/>' +
+      /* the bowl: tiers of seats seen from the pitch */
+      '<g fill="none" stroke="#fff" stroke-width="1.5"><path d="M-70 150 A270 120 0 0 1 460 150" stroke-opacity=".12"/><path d="M-50 178 A245 108 0 0 1 440 178" stroke-opacity=".1"/><path d="M-30 206 A225 98 0 0 1 420 206" stroke-opacity=".08"/><path d="M-10 234 A205 88 0 0 1 400 234" stroke-opacity=".06"/></g>' +
       /* floodlights */
-      '<g fill="var(--a)" fill-opacity=".9"><rect x="58" y="128" width="46" height="9" rx="2"/><rect x="286" y="128" width="46" height="9" rx="2"/><path d="M81 137 L81 215" stroke="var(--a)" stroke-opacity=".6" stroke-width="2"/><path d="M309 137 L309 215" stroke="var(--a)" stroke-opacity=".6" stroke-width="2"/></g>' +
-      '<path d="M58 137 L0 330 L0 600 L60 600 Z M332 137 L390 330 L390 600 L330 600 Z" fill="var(--a)" fill-opacity=".05"/>' +
-      /* the number */
-      '<text x="195" y="400" text-anchor="middle" font-family="Bricolage Grotesque, Archivo Black, sans-serif" font-weight="800" font-size="300" fill="var(--a)" fill-opacity=".14" stroke="var(--a)" stroke-opacity=".9" stroke-width="3">' + n + '</text>' +
+      '<g fill="' + gold + '"><ellipse cx="71" cy="100" rx="64" ry="26" fill-opacity=".22" filter="url(#' + id + 'b)"/><ellipse cx="319" cy="100" rx="64" ry="26" fill-opacity=".22" filter="url(#' + id + 'b)"/><rect x="48" y="96" width="46" height="7" rx="2" fill-opacity=".95"/><rect x="296" y="96" width="46" height="7" rx="2" fill-opacity=".95"/><rect x="70" y="103" width="2.5" height="56" fill-opacity=".45"/><rect x="318" y="103" width="2.5" height="56" fill-opacity=".45"/></g>' +
+      '<path d="M44 104 L-40 420 L-40 600 L110 600 Z M346 104 L430 420 L430 600 L280 600 Z" fill="' + gold + '" fill-opacity=".045"/>' +
+      /* pitch at the bottom */
+      '<g fill="none" stroke="#fff" stroke-width="2"><path d="M30 600 L112 392 L278 392 L360 600" stroke-opacity=".16"/><path d="M78 600 L146 392 M312 600 L244 392" stroke-opacity=".1"/><path d="M60 520 L330 520" stroke-opacity=".14"/><ellipse cx="195" cy="520" rx="50" ry="16" stroke-opacity=".16"/></g>' +
+      /* the legend */
+      '<text x="200" y="238" text-anchor="middle" font-family="Bricolage Grotesque, Archivo Black, sans-serif" font-weight="800" font-size="240" fill="' + gold + '" fill-opacity=".35">' + L[0] + '</text>' +
+      '<text x="195" y="232" text-anchor="middle" font-family="Bricolage Grotesque, Archivo Black, sans-serif" font-weight="800" font-size="240" fill="url(#' + id + 'n)" stroke="' + gold + '" stroke-width="2" stroke-opacity=".9">' + L[0] + '</text>' +
+      '<text x="195" y="268" text-anchor="middle" font-family="Manrope, system-ui, sans-serif" font-weight="800" font-size="22" letter-spacing="9" fill="' + gold + '">' + L[1] + '</text>' +
+      '<path d="M120 286 L270 286" stroke="' + gold + '" stroke-opacity=".6" stroke-width="1.5"/>' +
       '</svg>';
   }
   function heroImg(d, i) {
@@ -1180,7 +1186,7 @@ const ALT={"incline-db":{"name":"Incline barbell press","how":"Bench at 30\u00b0
     setCat(heroEl, d.cat);
     heroEl.innerHTML = heroImg(d, i) + '<div class="in">' +
       '<div class="when">' + (i === TODAY ? "Today, " : relDay(i).toLowerCase() === FULL[i].toLowerCase() ? "" : relDay(i) + ", ") + FULL[i] + " " + dt.getDate() + " " + MON[dt.getMonth()] + '</div>' +
-      '<div class="dn">' + kindOf(d).join(" ").replace(",", "") + '</div>' +
+      '<div class="dn' + (kindOf(d).join(" ").length > 10 ? " long" : "") + '">' + kindOf(d).join(" ").replace(",", "") + '</div>' +
       '<div class="tt">' + esc(d.lines.join(" · ")) + '</div>' +
       '<div class="stats">' + stats.map(x => '<div><b>' + x[0] + '</b><span>' + x[1] + '</span></div>').join("") + '</div>' +
       '<ul class="list">' + items.slice(0, 8).map(it => "<li>" + esc(it[0]) + "</li>").join("") + (items.length > 8 ? "<li>+ " + (items.length - 8) + " more</li>" : "") + '</ul>' +
