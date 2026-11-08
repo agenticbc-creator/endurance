@@ -665,6 +665,7 @@ body:not(.has-coach) .act.coach{display:none}
     <dl class="rpe">
       <dt>Easy</dt><dd>Zone 2. Full sentences, nose breathing. Slower than feels natural. Most of your running.</dd>
       <dt>Hard</dt><dd>The 600 m intervals. A few words at a time. Same pace on every rep.</dd>
+      <dt>Strides</dt><dd>Twenty-second smooth accelerations, not sprints: build up for 5 s, run fast and relaxed for 10 s at about 85% of your top speed, ease off for 5 s, then walk back to the start (about 50 s) and go again. Tall posture, quick light feet, loose hands and face. They teach the legs to turn over fast without the fatigue of a hard session. Flat, dry ground only while the knee is coming back; if it feels sharp on the push-off, skip them that day.</dd>
       <dt>Firm</dt><dd>The long-run finish. Comfortably hard, short sentences, about half-marathon effort.</dd>
     </dl>
 
@@ -762,15 +763,21 @@ const DAYS = [
     ] }
     ],
     run:{ id:"run1", kick:"Run 1", name:"Easy run", vk:"z2", card:"4 km easy",
-      what:"Four easy kilometres to build the engine, then four short relaxed strides.",
+      what:"Four easy kilometres to build the engine, then four strides: 20-second smooth accelerations that teach fast, light running without the fatigue.",
       feel:"Easy the whole way: full sentences, nose breathing. If the knee swells after, do 3 km next time.",
       tip:"Heavy and on a cut, easy means slow, and that is the plan. Walk breaks are fine, the kilometres still count. The time is an estimate at your pace.",
-      steps:[{t:"Zone 2",d:"4 km easy",pk:"z2"},{t:"Strides",d:"4 × 20 s fast and relaxed, walk back between"},{t:"Cool-down",d:"5 min walk"}],
+      steps:[{t:"Zone 2",d:"4 km easy",pk:"z2"},{t:"Strides",s:"4 × 20 s strides",d:"4 × 20 s: build 5 s, fast and relaxed 10 s, ease off 5 s. Walk back 50 s between. Not a sprint, about 85%."},{t:"Cool-down",d:"5 min walk"}],
       desc:"Easy 4 km aerobic run after the rehab and mobility blocks. Conversational pace, then four strides to finish.",
       links:[["Zone 2 explained","zone 2 running explained nasal breathing","zone2"],["Strides","how to do running strides","strides"]],
       phases:[
         { n:"Zone 2, 4 km", km:4, rpe:"RPE 3–4", pk:"z2", note:"Conversational pace. If you can breathe through your nose only, you're easy enough. The timer is the estimate for 4 km at your pace." },
-        { n:"4 × 20 s strides", d:null, rpe:"Relaxed", pk:null, note:"Smooth build to fast but relaxed, then ease off. Walk back between. Tap Next when done." },
+        { n:"Stride 1 of 4", d:20, rpe:"Fast, relaxed", pk:null, note:"Build for 5 s, fast and relaxed for 10 s at about 85%, ease off for 5 s. Tall, quick feet, loose hands." },
+        { n:"Walk back", d:50, rpe:"Walk", pk:null, note:"Walk back to where you started. Shake the arms out." },
+        { n:"Stride 2 of 4", d:20, rpe:"Fast, relaxed", pk:null, note:"Same shape: build, fast and relaxed, ease. Land under your hips, not out in front." },
+        { n:"Walk back", d:50, rpe:"Walk", pk:null, note:"Walk back. Breathe." },
+        { n:"Stride 3 of 4", d:20, rpe:"Fast, relaxed", pk:null, note:"Relax the face and shoulders at speed. Speed comes from rhythm, not strain." },
+        { n:"Walk back", d:50, rpe:"Walk", pk:null, note:"Walk back. One more." },
+        { n:"Stride 4 of 4", d:20, rpe:"Fast, relaxed", pk:null, note:"Last one, smoothest one. Ease off before you tie up." },
         { n:"Cool-down walk", d:300, rpe:"Walk", pk:null, note:"Walk it out." }
       ]}
   },
@@ -848,12 +855,17 @@ const DAYS = [
       what:"Four hard 600-metre reps with easy 400 m jogs between. Top-end fitness for football and the mats.",
       feel:"Hard but repeatable: rep 4 at the same pace as rep 1. A few words at a time.",
       tip:"New to intervals, or legs flat from the cut? Do 3 reps and add the fourth in two weeks. Any sharp knee pain: stop the reps and jog easy instead.",
-      steps:[{t:"Warm-up",d:"1.5 km easy jog",pk:"easy"},{t:"Drills",d:"A-skips, B-skips, high knees, then 3 × 20 s strides"},{t:"Intervals",d:"4 × 600 m hard, 400 m easy jog between",pk:"vo2"},{t:"Cool-down",d:"1 km easy jog",pk:"easy"}],
+      steps:[{t:"Warm-up",d:"1.5 km easy jog",pk:"easy"},{t:"Drills + strides",s:"Drills + 3 strides",d:"A-skips, B-skips, high knees, then 3 × 20 s strides: build 5 s, fast and relaxed 10 s, ease 5 s, walk back between"},{t:"Intervals",d:"4 × 600 m hard, 400 m easy jog between",pk:"vo2"},{t:"Cool-down",d:"1 km easy jog",pk:"easy"}],
       desc:"VO2 max intervals. Four 600 m reps at about 5K effort with easy 400 m jogs between. Warm up properly, it matters here.",
       links:[["Running drills","running drills a skip b skip warm up","drills"],["Strides","how to do running strides","strides"],["Interval running","interval running workout for beginners explained"]],
       phases:[
         { n:"Easy warm-up, 1.5 km", km:1.5, rpe:"RPE 3", pk:"easy", note:"Easy jog. Loosen up." },
-        { n:"Drills + 3 × 20 s strides", d:null, rpe:"Drills", pk:null, note:"A-skips, B-skips, high knees, then 3 smooth strides. Tap Next when you're done." },
+        { n:"Drills", d:null, rpe:"Drills", pk:null, note:"A-skips, B-skips, high knees, 20 m each, walk back between. Tap Next when you're done." },
+        { n:"Stride 1 of 3", d:20, rpe:"Fast, relaxed", pk:null, note:"Build for 5 s, fast and relaxed for 10 s at about 85%, ease off for 5 s. Not a sprint." },
+        { n:"Walk back", d:50, rpe:"Walk", pk:null, note:"Walk back to the start." },
+        { n:"Stride 2 of 3", d:20, rpe:"Fast, relaxed", pk:null, note:"Tall, quick feet, loose hands. Same speed as the first." },
+        { n:"Walk back", d:50, rpe:"Walk", pk:null, note:"Walk back. Breathe." },
+        { n:"Stride 3 of 3", d:20, rpe:"Fast, relaxed", pk:null, note:"Smooth. This one opens the legs for the reps." },
         { n:"Interval 1 of 4, 600 m", km:0.6, rpe:"RPE 8–9", pk:"vo2", hard:true, note:"Hard. Settle into a pace you can hold for all four." },
         { n:"Easy jog, 400 m", km:0.4, rpe:"RPE 2–3", pk:"jog", note:"Keep moving. Bring your breathing down." },
         { n:"Interval 2 of 4, 600 m", km:0.6, rpe:"RPE 8–9", pk:"vo2", hard:true, note:"Same pace as the first. Relaxed shoulders." },
@@ -1118,6 +1130,7 @@ const ALT={"incline-db":{"name":"Incline barbell press","how":"Bench at 30\u00b0
   function phaseKm(p) {
     const P = paces(), d = phaseDur(p);
     if (p.km) return p.km;
+    if (/^Stride/.test(p.n)) return 0.1;
     if (!d) return p.n.indexOf("strides") >= 0 ? 0.4 : 0.5;
     if (!p.pk) return d / 60 * 0.08;              /* walking */
     const r = P[p.pk]; return d / ((r[0] + r[1]) / 2);
@@ -1243,7 +1256,7 @@ const ALT={"incline-db":{"name":"Incline barbell press","how":"Bench at 30\u00b0
     const blocks = [];
     if (d.rest) blocks.push({ n: "1", b: "Recovery", m: "Walk, stretch, sleep. Nothing else.", to: 1 });
     (d.blocks || []).forEach((b, bi) => blocks.push({ n: String(blocks.length + 1), b: b.title, m: b.items.length + " exercises, " + b.mins + " min. " + b.kick, to: SL[i].findIndex(sl => sl.t === "block" && sl.bi === bi) }));
-    if (d.run) blocks.push({ n: String(blocks.length + 1), b: d.run.kick + ": " + d.run.name, m: d.run.steps.map(x => x.d).join(". ") + ". " + rs.km + " km, ≈ " + rs.mins + " min", to: slideIndex(i, "run") });
+    if (d.run) blocks.push({ n: String(blocks.length + 1), b: d.run.kick + ": " + d.run.name, m: d.run.steps.map(x => x.s || x.d).join(". ") + ". " + rs.km + " km, ≈ " + rs.mins + " min", to: slideIndex(i, "run") });
     if (d.lifts) {
       const groups = []; d.lifts.forEach(e => { const g = e.group || d.lines.join(" "); if (groups.indexOf(g) < 0) groups.push(g); });
       groups.forEach((g, gi) => {
@@ -1559,7 +1572,8 @@ const ALT={"incline-db":{"name":"Incline barbell press","how":"Bench at 30\u00b0
   function announcePhase(p) {
     const d = phaseDur(p), km = p.km ? p.km + (p.km === 1 ? " kilometre" : " kilometres") + ", " : "";
     const mins = d ? (d >= 60 ? "about " + Math.round(d / 60) + " minute" + (d >= 120 ? "s" : "") : d + " seconds") + ". " : "";
-    say(p.n.replace(/×/g, "by").replace(/, [\d.]+ k?m$/, "") + ". " + km + mins + (START[p.pk || "walk"] || ""));
+    const st = /^Stride/.test(p.n) ? "Build up, then fast and relaxed." : /Walk back/.test(p.n) ? "Walk back to the start." : (START[p.pk || "walk"] || "");
+    say(p.n.replace(/×/g, "by").replace(/, [\d.]+ k?m$/, "") + ". " + km + mins + st);
     beep(p.hard ? 1175 : 784, p.hard ? 3 : 2, 0.14); buzz(p.hard ? [120, 60, 120, 60, 120] : [160]);
     COACH = null;
   }
@@ -1616,7 +1630,9 @@ const ALT={"incline-db":{"name":"Incline barbell press","how":"Bench at 30\u00b0
       if (left != null) {
         const s = Math.ceil(left), p = ph[RT.n], dur = phaseDur(p), nx = ph[RT.n + 1], frac = dur ? 1 - left / dur : 0;
         if (s === 60 && dur >= 150 && !RTsaid[60]) { RTsaid[60] = 1; coach(p.hard ? "One minute. Stay smooth, this is where it counts." : "One minute left in this phase."); }
-        if (s === 10 && !RTsaid[10]) { RTsaid[10] = 1; coach(nx ? "Ten seconds. Next: " + nx.n.replace(/×/g, "by") + "." + (nx.hard ? " Big breath." : "") : "Ten seconds. Almost there."); }
+        if (s === 10 && dur >= 45 && !RTsaid[10]) { RTsaid[10] = 1; coach(nx ? "Ten seconds. Next: " + nx.n.replace(/×/g, "by") + "." + (nx.hard ? " Big breath." : /^Stride/.test(nx.n) ? " Build it smoothly." : "") : "Ten seconds. Almost there."); }
+        if (s === 15 && /^Stride/.test(p.n) && !RTsaid.s15) { RTsaid.s15 = 1; coach("Now fast and relaxed.", true); }
+        if (s === 5 && /^Stride/.test(p.n) && !RTsaid.s5) { RTsaid.s5 = 1; coach("Ease off.", true); }
         const marks = dur >= 240 ? [0.25, 0.5, 0.75] : dur >= 100 ? [0.5] : [];
         marks.forEach((m, mi) => { const key = "m" + m; if (frac >= m && !RTsaid[key]) { RTsaid[key] = 1; const set = CUES[p.pk || "walk"] || CUES.easy; const line = (m === 0.5 && dur >= 600 && p.pk === "z2") ? KNEE : set[(RT.n + mi) % set.length]; coach((m === 0.5 ? "Halfway. " : "") + line); } });
       }
