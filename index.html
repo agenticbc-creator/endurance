@@ -2,12 +2,17 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no, interactive-widget=resizes-content">
 <meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Hadeed">
+<meta name="application-name" content="Hadeed">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="theme-color" content="#121316">
-<link rel="apple-touch-icon" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAALQAAAC0CAIAAACyr5FlAAACJklEQVR4nO3doVEDURRA0Q0TlYi4dESqiKAAOkDSyhaAwaykB5qIYqgAg+QKhp3NkjmngPe+uPPl/5vd/jDAT+6ufQDWSxwkcZDEQRIHSRwkcZDEQRIHSRwkcZDEQRIHSRwkcZDEQRIHSRwkcZDEQRIHSRwkcZDEQRIHSRwkcZDEQRIHSRwkcZC21z7At8vlMsuc8/k8TdMso37ldDqN4zjLqOPxOMucv3NzkMRBEgdJHCRxkMRBEgdJHCRxkMRBEgdJHCRxkMRBEgdJHCRxkMRBEgdJHCRxkMRBEgdJHCRxkMRBEgdJHCRxkMRBEgdJHCRxkMRBEgdJHCRxkMRB2uz2h2ufYRjme2ryBnhqkn9AHCRxkMRBEgdJHCRxkMRBEgdJHCRxkMRBEgdJHCRxkMRBEgdJHKS1/Eg9lxv4kXo93BwkcZDEQRIHSRwkcZDEQRIHSRwkcZDEQRIHSRwkcZDEQRIHSRwkcZDEQRIHSRwkcZDEQRIHSRwkcZDEQRIHSRwkcZDEQRIHSRwkcZDEQRIHSRwkcZDEQVrLd+WskJuDJA6SOEjiIImDJA6SOEjiIImDJA6SOEjiIImDJA6SOEjiIImDJA6SOEjiIImDJA6SOEjiIImDJA6SOEjiIImDJA6SOEjb+4ePxZa9vD0utmt4fl1u17RbbNXT5/tiu9wcJHGQxEESB0kcJHGQxEESB0kcJHGQxEESB0kcJHGQxEESB0kcpC+ehBuJ+v0HTgAAAABJRU5ErkJggg==">
+<meta name="color-scheme" content="dark light">
+<meta name="format-detection" content="telephone=no, date=no, address=no, email=no">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
 <link rel="icon" type="image/png" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAALQAAAC0CAIAAACyr5FlAAACJklEQVR4nO3doVEDURRA0Q0TlYi4dESqiKAAOkDSyhaAwaykB5qIYqgAg+QKhp3NkjmngPe+uPPl/5vd/jDAT+6ufQDWSxwkcZDEQRIHSRwkcZDEQRIHSRwkcZDEQRIHSRwkcZDEQRIHSRwkcZDEQRIHSRwkcZDEQRIHSRwkcZDEQRIHSRwkcZC21z7At8vlMsuc8/k8TdMso37ldDqN4zjLqOPxOMucv3NzkMRBEgdJHCRxkMRBEgdJHCRxkMRBEgdJHCRxkMRBEgdJHCRxkMRBEgdJHCRxkMRBEgdJHCRxkMRBEgdJHCRxkMRBEgdJHCRxkMRBEgdJHCRxkMRB2uz2h2ufYRjme2ryBnhqkn9AHCRxkMRBEgdJHCRxkMRBEgdJHCRxkMRBEgdJHCRxkMRBEgdJHKS1/Eg9lxv4kXo93BwkcZDEQRIHSRwkcZDEQRIHSRwkcZDEQRIHSRwkcZDEQRIHSRwkcZDEQRIHSRwkcZDEQRIHSRwkcZDEQRIHSRwkcZDEQRIHSRwkcZDEQRIHSRwkcZDEQVrLd+WskJuDJA6SOEjiIImDJA6SOEjiIImDJA6SOEjiIImDJA6SOEjiIImDJA6SOEjiIImDJA6SOEjiIImDJA6SOEjiIImDJA6SOEjb+4ePxZa9vD0utmt4fl1u17RbbNXT5/tiu9wcJHGQxEESB0kcJHGQxEESB0kcJHGQxEESB0kcJHGQxEESB0kcpC+ehBuJ+v0HTgAAAABJRU5ErkJggg==">
 <title>Hadeed</title>
 <script>(function(){try{if(JSON.parse(localStorage.getItem("hw3:light")||"false"))document.documentElement.dataset.theme="light";}catch(e){}})();</script>
@@ -61,7 +66,11 @@
 [hidden]{display:none !important}
 html{font-synthesis:none;-webkit-text-size-adjust:100%}
 html,body{margin:0;height:100%;background:var(--g1);color:var(--fg)}
-body{font:400 16px/1.5 var(--ui);font-variant-numeric:tabular-nums;-webkit-font-smoothing:antialiased;overflow:hidden}
+html{overscroll-behavior:none}
+body{font:400 16px/1.5 var(--ui);font-variant-numeric:tabular-nums;-webkit-font-smoothing:antialiased;overflow:hidden;position:fixed;inset:0;width:100%;height:100%;height:100dvh;overscroll-behavior:none;touch-action:manipulation;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
+input,textarea,[contenteditable]{-webkit-user-select:text;user-select:text}
+img,svg{-webkit-user-drag:none;user-drag:none;-webkit-touch-callout:none}
+button,a,[role="button"]{touch-action:manipulation}
 button,input,textarea{font:inherit;color:inherit}
 button{cursor:pointer;border:0;background:none;padding:0;text-align:inherit}
 a{color:inherit}
@@ -381,8 +390,9 @@ body:not(.has-coach) .tile.coach,body:not(.has-coach) .ibtn.coach{display:none}
 #rest .rmin{min-height:44px;font:600 13px/1.2 var(--ui);color:var(--fg3);text-decoration:underline;text-underline-offset:3px}
 #rest.go{background:color-mix(in srgb,var(--accent-wash),var(--scrim))}
 #rest.go .rb,#rest.go .rmin,#rest.go .rl{visibility:hidden}
-#pill{position:fixed;left:50%;bottom:calc(16px + var(--safe-b));z-index:65;transform:translate(-50%,160%);transition:transform .3s var(--ease),bottom .25s var(--ease);display:flex;align-items:center;gap:12px;height:52px;padding:0 20px;border-radius:var(--r-pill);background:var(--glass);-webkit-backdrop-filter:blur(20px) saturate(120%);backdrop-filter:blur(20px) saturate(120%);color:var(--fg);font:600 15px/1.2 var(--ui);box-shadow:0 0 0 1px var(--line2),0 16px 40px -20px rgba(0,0,0,.7)}
-#pill.on{transform:translate(-50%,0)}
+#pill{position:fixed;left:50%;bottom:calc(16px + var(--safe-b));z-index:65;transform:translate(-50%,calc(100% + 24px + var(--safe-b)));visibility:hidden;transition:transform .3s var(--ease),bottom .25s var(--ease);display:flex;align-items:center;gap:12px;height:52px;padding:0 20px;border-radius:var(--r-pill);background:var(--glass);-webkit-backdrop-filter:blur(20px) saturate(120%);backdrop-filter:blur(20px) saturate(120%);color:var(--fg);font:600 15px/1.2 var(--ui);box-shadow:0 0 0 1px var(--line2),0 16px 40px -20px rgba(0,0,0,.7)}
+#pill.on{transform:translate(-50%,0);visibility:visible}
+#pill{transition:transform .3s var(--ease),bottom .25s var(--ease),visibility 0s .3s} #pill.on{transition:transform .3s var(--ease),bottom .25s var(--ease),visibility 0s}
 #pill b{font:600 20px/1 var(--ui);font-variant-numeric:tabular-nums}
 #pill.go{background:var(--accent);color:var(--accent-ink);box-shadow:none}
 
