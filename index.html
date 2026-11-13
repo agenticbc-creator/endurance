@@ -900,13 +900,13 @@ const DAYS = [
         alt:"Smith machine calf raise." }
     ]
   },
-  { cat:"run",
-    hero:"runhero",
-    lines:["Run 3", "long"],
-    kind:["Rehab,", "then run"],
-    short:"Long run",
-    sub:"Knee rehab, mobility, then 5 km easy + 1 km hard.",
-    line:"Longest run of the week. Early, before the heat.",
+  { cat:"upper",
+    hero:"incline-db",
+    lines:["Upper 5", "pump + knee"],
+    kind:["Lift", "day"],
+    short:"Pump + knee",
+    sub:"No run this week. Knee rehab, then a quick chest, back and arms pump.",
+    line:"Run swapped for the gym this week. Rehab first, then moderate weights, nothing to failure: Saturday's legs are heavy.",
     blocks:[
     { id:"rehab", title:"Knee rehab", kick:"ACL + meniscus, return-to-sport", mins:17, cat:"lower",
     intro:"Seventeen minutes that make the run safe. Quad control, glute strength, single-leg balance, trunk, and a little bounce in both directions. Every run day, in this order. Nothing here should hurt.",
@@ -920,34 +920,36 @@ const DAYS = [
       { id:"slrdl-bw", name:"Single-leg reach", rx:"2 × 8 each", how:"Balance on one leg, hinge and reach forward, back leg floats behind. Slow, no wobble.", img:"sl-rdl", q:"single leg RDL balance bodyweight" },
       { id:"hops", name:"Pogo hops", rx:"2 × 15 small", how:"Both feet, small quick hops, land quietly with soft knees. If that's easy, 2 × 8 single-leg hops, stick every landing.", img:"hops", q:"return to sport hop progression ACL" },
       { id:"lathop", name:"Lateral hops", rx:"2 × 8 each, small", how:"Hop sideways over a line and stick the landing for 2 s, knee soft and over the toes. The football and mats move. Stop if the knee says no.", img:"lathop", q:"single leg lateral hop ACL return to sport" }
-    ] },
-    { id:"mob", title:"Mobility", kick:"Hips, quads, calves, ankles", mins:13, cat:"rest",
-    intro:"Thirteen minutes to open what running tightens, then wake the legs up. Hold the stretches and breathe; move through the last three. The run warm-up starts inside the run.",
-    items:[
-      { id:"quad-st", name:"Standing quad stretch", rx:"45 s each", how:"Hold a wall, pull the heel to the glute, hips forward. Knee points down.", img:"quad-st", q:"standing quad stretch" },
-      { id:"hipflex", name:"Kneeling hip flexor stretch", rx:"45 s each", how:"Half kneel, tuck the pelvis, shift forward until the front of the hip stretches.", img:"hipflex", q:"kneeling hip flexor stretch" },
-      { id:"calf-st", name:"Calf stretch on the wall", rx:"45 s each", how:"Hands on the wall, back leg straight, heel down. Then bend the back knee for the lower calf.", img:"calf-st", q:"calf stretch wall runners" },
-      { id:"ham-st", name:"Hamstring stretch", rx:"45 s each", how:"Heel on a step, leg straight, hinge from the hips with a flat back.", img:"ham-st", q:"standing hamstring stretch" },
-      { id:"fig4", name:"Figure-4 glute stretch", rx:"45 s each", how:"Sit, ankle on the opposite knee, lean forward with a straight back.", img:"fig4", q:"figure 4 glute stretch seated" },
-      { id:"ankle", name:"Ankle circles + knee to wall", rx:"30 s each", how:"Ten circles each way, then toes 10 cm from a wall, drive the knee to touch it without the heel lifting.", img:"ankle", q:"knee to wall ankle mobility" },
-      { id:"wgs", name:"World's greatest stretch", rx:"5 each side", how:"Long lunge, same-side hand to the floor, elbow to the instep, then rotate and reach to the sky. Slow.", img:"wgs", q:"world's greatest stretch runners warm up" },
-      { id:"inch", name:"Inchworm", rx:"6 reps", how:"Hands walk out to a plank, hold 1 s, feet walk back to the hands with straight legs.", img:"inch", q:"inchworm exercise warm up" },
-      { id:"legsw", name:"Leg swings", rx:"10 each, front and side", how:"Hold a wall. Swing the leg forward and back, then across the body. Loose, taller each swing.", img:"legsw", q:"leg swings dynamic warm up running" }
     ] }
     ],
-    run:{ id:"run3", kick:"Run 3", name:"Long run", vk:"long", card:"5 km easy + 1 km hard",
-      what:"Your longest run. Five easy kilometres, then one comfortably hard, then a walk.",
-      feel:"Start slow. The last kilometre is short-sentences-only, like half-marathon effort.",
-      tip:"Add 0.5 km to the easy part every two weeks if the knee is quiet the next morning, and cap it at 8 km while you're cutting. Carry water. Go early, before the heat.",
-      steps:[{t:"Zone 2",d:"5 km easy",pk:"z2"},{t:"Finish",d:"1 km comfortably hard",pk:"thr"},{t:"Cool-down",d:"5 min walk"}],
-      desc:"Five kilometres easy Zone 2, then the last kilometre comfortably hard at about half-marathon pace, then a 5-minute walk.",
-      links:[["Zone 2 explained","zone 2 running explained nasal breathing","zone2"],["Threshold pace","threshold running pace explained"]],
-      phases:[
-        { n:"Zone 2, 5 km", km:5, rpe:"RPE 3–4", pk:"z2", note:"Conversational the whole way. Nose-breathing pace. The timer is the estimate at your pace." },
-        { n:"Threshold finish, 1 km", km:1, rpe:"RPE 7", pk:"thr", hard:true, note:"Comfortably hard, roughly half-marathon pace." },
-        { n:"Cooldown walk", d:300, rpe:"Walk", pk:null, note:"Walk it out. Great work." }
-      ]}
+    lifts:[
+      { id:"incline-db", how:"Bench at 30°. Lower to your upper chest, press up and slightly in.", name:"Incline DB press", sets:3, reps:"10", rest:90, tempo:"Down 3 s, up 1 s", target:"Upper chest, front delts, triceps", eq:["Dumbbells","Incline bench"],
+        desc:"Press two dumbbells up from a bench set to about 30°. Builds the upper chest and front shoulders. Three sets, the last rep of each should be hard but clean.",
+        cues:["Bench at 30–45°. Pin shoulder blades back and down.","Lower to your upper chest, elbows about 45° from your body.","Press up and slightly in. Don't clank the dumbbells."],
+        alt:"Incline barbell press or an incline machine press." },
+      { id:"cable-fly", how:"Cables at chest height. Arms wide, bring the handles together in front of you.", name:"Cable fly", sets:3, reps:"12–15", rest:60, tempo:"Controlled", target:"Chest", eq:["Cable machine", "Two handles"],
+        desc:"Standing between two cables, sweep your arms together in a hug. Constant tension on the chest. Light weight, slow and squeezed.",
+        cues:["Slight bend in the elbows, keep it fixed.", "Squeeze at the front for one second.", "Open wide for the stretch, under control."],
+        alt:"Pec deck or dumbbell fly." },
+      { id:"lat-pd", how:"Palms facing. Pull the handle to your upper chest, elbows down.", name:"Lat pulldown, neutral grip", sets:3, reps:"10–12", rest:90, tempo:"Pull 1 s, lower 3 s", target:"Lats, upper back, biceps", eq:["Cable machine","Neutral-grip handle"],
+        desc:"Pull a neutral-grip handle down to your upper chest. Builds width in your back. Palms face each other, which is kinder to the shoulders.",
+        cues:["Lean back slightly, chest up.","Pull to your upper chest by driving the elbows down.","Let your arms fully stretch at the top, under control."],
+        alt:"Neutral-grip pull-ups, or a machine pulldown." },
+      { id:"cable-lat", how:"Low cable, one arm. Raise to shoulder height, lower slowly.", name:"Cable lateral raise", sets:3, reps:"12–15", rest:60, tempo:"Up 1 s, down 3 s", target:"Side delts", eq:["Cable machine","Single handle"],
+        desc:"Raise one arm out to the side against a low cable. The cable keeps tension the whole way, which is why it beats dumbbells for side delts.",
+        cues:["Cable low, slight lean away from the machine.","Lead with the elbow, raise to shoulder height.","Lower slowly. No swinging."],
+        alt:"Dumbbell lateral raise." },
+      { id:"ez-curl", how:"Elbows pinned to your sides. Curl up, lower in 2 s.", name:"EZ bar curl", sets:3, reps:"10–12", rest:60, tempo:"Up 1 s, down 2 s", target:"Biceps", eq:["EZ bar"],
+        desc:"Curl an EZ bar with your elbows pinned to your sides. The angled grip is easier on the wrists than a straight bar.",
+        cues:["Elbows pinned to your sides.","No hip swing. Full range, top to bottom.","Take 2 seconds to lower."],
+        alt:"Dumbbell curls." },
+      { id:"pushdown", how:"Rope at chest height. Push down to lockout, spread the rope at the bottom.", name:"Triceps pushdown", sets:3, reps:"12–15", rest:60, tempo:"Controlled", target:"Triceps", eq:["Cable machine", "Rope"],
+        desc:"The classic triceps finisher. Elbows pinned, push the rope down and apart, let it rise slowly.",
+        cues:["Elbows stay beside your ribs.", "Full lockout, spread the rope.", "Up in 2 seconds, no shrugging."],
+        alt:"V-bar pushdown or dumbbell kickbacks." }
+    ]
   },
+
   { cat:"power",
     hero:"back-squat",
     lines:["Upper 4", "shoulders, arms, legs B"],
@@ -1167,7 +1169,7 @@ const ALT={"incline-db":{"name":"Incline barbell press","how":"Bench at 30\u00b0
     const i = heroDay, d = DAYS[i], rs = d.run ? runStats(d.run) : null;
     const stats = [];
     if (d.lifts) { stats.push([d.lifts.length, "lifts"], [setsOf(d), "sets"]); }
-    if (d.blocks) stats.push([blkMins(d) + " min", "pre-run"]);
+    if (d.blocks) stats.push([blkMins(d) + " min", d.run ? "pre-run" : "rehab"]);
     if (rs) stats.push([rs.km + " km", "run"]);
     stats.push(["≈ " + fmtMin(dayMins(d)), "total"]);
     setCat(heroEl, d.cat);
@@ -1230,6 +1232,11 @@ const ALT={"incline-db":{"name":"Incline barbell press","how":"Bench at 30\u00b0
     return '<div class="ttl"><span class="eb tint"><i class="dot"></i>' + (i === TODAY ? "Today" : FULL[i]) + SEP + dayKind(d) + '</span>' +
       '<h1 class="dxl">' + esc(d.lines[0]) + '</h1><div class="dsub">' + esc(d.lines[1] || "") + '</div>' + (d.sub ? '<p class="sub">' + esc(d.sub) + '</p>' : "") + '</div>';
   }
+  function blockSections(i, d, off) {
+      return d.blocks.map((b, bi) => '<div data-cat="' + b.cat + '">' + secHd(bi + 1 + off, b.title, b.mins + " min", null, '<button type="button" class="pillb" data-act="rest" data-s="' + (b.mins * 60) + '" data-n="' + esc(b.title) + '" data-blk="' + i + ':' + bi + '" aria-label="Start the ' + b.mins + '-minute ' + esc(b.title) + ' timer">' + I.clock + pad(b.mins) + ':00</button>') +
+          '<div class="card list">' + b.items.map((it, n) => '<button type="button" class="row" data-act="item" data-d="' + i + '" data-b="' + bi + '" data-n="' + n + '" data-row="' + bi + ':' + n + '"><span class="th">' + thumb(it) + '</span><span class="tx"><b>' + esc(it.name) + '</b><span>' + esc(it.how) + '</span></span><span class="rt"><span class="rxn">' + esc(it.rx) + '</span></span></button>').join("") + '</div></div>'
+      ).join("");
+  }
   function renderSession(i, keepScroll) {
     const d = DAYS[i], top = sbody.scrollTop;
     setCat(sessionEl, d.cat);
@@ -1240,6 +1247,7 @@ const ALT={"incline-db":{"name":"Incline barbell press","how":"Bench at 30\u00b0
       const total = setsOf(d), done = gymDone(i), pct = total ? Math.round(done / total * 100) : 0;
       html += '<div class="prog"><div class="pbar"><span style="width:' + pct + '%"></span></div><div class="cap">' + done + ' of ' + total + ' sets' + (done ? (done >= total ? SEP + 'complete' : '') : SEP + 'not started') + '</div>' + (d.rule ? '<div class="rule"><i class="dot"></i><span>' + esc(d.rule) + '</span></div>' : "") + '</div>';
       let n = 1;
+      if (d.blocks) { html += blockSections(i, d, 0); n += d.blocks.length; }
       if (d.warmup) {
         html += secHd(n++, "Warm-up", d.warmup.mins + " min" + SEP + d.warmup.items.length + " items", 'data-act="slide" data-to="0" data-row="0"') +
           '<div class="card list"><button type="button" class="row nothumb" data-act="wtog" aria-expanded="false"><span class="tx"><b>Warm-up</b><span>' + esc(d.warmup.note) + '</span></span><span class="rt">' + I.down + '</span></button>' +
@@ -1257,17 +1265,16 @@ const ALT={"incline-db":{"name":"Incline barbell press","how":"Bench at 30\u00b0
       html += secHd(n++, "Finish", "", 'data-act="slide" data-to="' + finishIdx(i) + '" data-row="' + finishIdx(i) + '"') +
         '<div class="card list"><button type="button" class="row nothumb" data-act="slide" data-to="' + finishIdx(i) + '"><span class="tx"><b>Finish &amp; share</b><span>' + (done >= total ? "All sets done" : "Sets ticked so far: " + done) + '</span></span><span class="rt">' + I.chev + '</span></button></div>';
       const nextE = d.lifts.find(e => doneOf(i, e) < e.sets);
-      bar = done >= total ? '<button type="button" class="btn done" data-act="slide" data-to="' + finishIdx(i) + '">Session complete</button>'
+      const firstB = d.blocks ? d.blocks.map((b, bi) => blkDone(i, bi)).indexOf(false) : -1;
+      bar = firstB >= 0 && !done ? '<button type="button" class="btn" data-act="item" data-d="' + i + '" data-b="' + firstB + '" data-n="0">Begin ' + esc(d.blocks[firstB].title.toLowerCase()) + '</button>'
+        : done >= total ? '<button type="button" class="btn done" data-act="slide" data-to="' + finishIdx(i) + '">Session complete</button>'
         : done ? '<button type="button" class="btn" data-act="slide" data-to="' + liftIdx(i, nextE) + '">Continue' + SEP + esc(GYM.swap[gk(i, nextE.id)] && ALT[nextE.id] ? ALT[nextE.id].name : nextE.name) + '</button>'
-        : '<button type="button" class="btn" data-act="slide" data-to="0">Begin with the warm-up</button>';
+        : '<button type="button" class="btn" data-act="slide" data-to="0">' + (d.warmup ? "Begin with the warm-up" : "Begin the lifts") + '</button>';
     } else {
       const run = d.run, rs = runStats(run), P = paces(), bd = d.blocks.map((b, bi) => blkDone(i, bi)), rd = runDone(i);
       const parts = bd.concat([rd]), pct = Math.round(parts.filter(Boolean).length / parts.length * 100);
       html += '<div class="prog"><div class="pbar"><span style="width:' + pct + '%"></span></div><div class="cap">' + d.blocks.map((b, bi) => '<span' + (bd[bi] ? ' style="color:var(--good)"' : "") + '>' + esc(b.title.replace("Knee rehab", "Rehab")) + '</span>').join(SEP) + SEP + '<span' + (rd ? ' style="color:var(--good)"' : "") + '>Run</span></div></div>';
-      d.blocks.forEach((b, bi) => {
-        html += '<div data-cat="' + b.cat + '">' + secHd(bi + 1, b.title, b.mins + " min", null, '<button type="button" class="pillb" data-act="rest" data-s="' + (b.mins * 60) + '" data-n="' + esc(b.title) + '" data-blk="' + i + ':' + bi + '" aria-label="Start the ' + b.mins + '-minute ' + esc(b.title) + ' timer">' + I.clock + pad(b.mins) + ':00</button>') +
-          '<div class="card list">' + b.items.map((it, n) => '<button type="button" class="row" data-act="item" data-d="' + i + '" data-b="' + bi + '" data-n="' + n + '" data-row="' + bi + ':' + n + '"><span class="th">' + thumb(it) + '</span><span class="tx"><b>' + esc(it.name) + '</b><span>' + esc(it.how) + '</span></span><span class="rt"><span class="rxn">' + esc(it.rx) + '</span></span></button>').join("") + '</div></div>';
-      });
+      html += blockSections(i, d, 0);
       html += secHd(d.blocks.length + 1, "The run", rs.km + " km" + SEP + "≈ " + rs.mins + " min", null) +
         '<div class="runcard" data-cat="run"><button type="button" class="row nothumb" style="padding:0;min-height:0;display:block" data-act="run" data-d="' + i + '"><span class="eb tint">' + esc(run.kick) + SEP + 'after rehab and mobility</span><h2 class="dm">' + esc(run.name) + '</h2>' +
         '<div class="stats"><div><b>' + rs.km + ' km</b><span>distance</span></div><div><b>≈ ' + rs.mins + ' min</b><span>estimate</span></div><div><b>' + (pref.tm ? kmh(P[run.steps[0].pk || "z2"]) : paceOne(P[run.steps[0].pk || "z2"])) + '</b><span>' + (pref.tm ? "km/h" : "min / km") + '</span></div></div></button>' +
