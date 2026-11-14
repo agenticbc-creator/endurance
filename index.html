@@ -900,13 +900,13 @@ const DAYS = [
         alt:"Smith machine calf raise." }
     ]
   },
-  { cat:"upper",
-    hero:"incline-db",
-    lines:["Upper 5", "pump + knee"],
-    kind:["Lift", "day"],
-    short:"Pump + knee",
-    sub:"No run this week. Knee rehab, then a quick chest, back and arms pump.",
-    line:"Run swapped for the gym this week. Rehab first, then moderate weights, nothing to failure: Saturday's legs are heavy.",
+  { cat:"run",
+    hero:"runhero",
+    lines:["Run 3", "long"],
+    kind:["Rehab,", "then run"],
+    short:"Long run",
+    sub:"Knee rehab, mobility, then 5 km easy + 1 km hard.",
+    line:"Longest run of the week. Early, before the heat.",
     blocks:[
     { id:"rehab", title:"Knee rehab", kick:"ACL + meniscus, return-to-sport", mins:17, cat:"lower",
     intro:"Seventeen minutes that make the run safe. Quad control, glute strength, single-leg balance, trunk, and a little bounce in both directions. Every run day, in this order. Nothing here should hurt.",
@@ -920,36 +920,34 @@ const DAYS = [
       { id:"slrdl-bw", name:"Single-leg reach", rx:"2 × 8 each", how:"Balance on one leg, hinge and reach forward, back leg floats behind. Slow, no wobble.", img:"sl-rdl", q:"single leg RDL balance bodyweight" },
       { id:"hops", name:"Pogo hops", rx:"2 × 15 small", how:"Both feet, small quick hops, land quietly with soft knees. If that's easy, 2 × 8 single-leg hops, stick every landing.", img:"hops", q:"return to sport hop progression ACL" },
       { id:"lathop", name:"Lateral hops", rx:"2 × 8 each, small", how:"Hop sideways over a line and stick the landing for 2 s, knee soft and over the toes. The football and mats move. Stop if the knee says no.", img:"lathop", q:"single leg lateral hop ACL return to sport" }
+    ] },
+    { id:"mob", title:"Mobility", kick:"Hips, quads, calves, ankles", mins:13, cat:"rest",
+    intro:"Thirteen minutes to open what running tightens, then wake the legs up. Hold the stretches and breathe; move through the last three. The run warm-up starts inside the run.",
+    items:[
+      { id:"quad-st", name:"Standing quad stretch", rx:"45 s each", how:"Hold a wall, pull the heel to the glute, hips forward. Knee points down.", img:"quad-st", q:"standing quad stretch" },
+      { id:"hipflex", name:"Kneeling hip flexor stretch", rx:"45 s each", how:"Half kneel, tuck the pelvis, shift forward until the front of the hip stretches.", img:"hipflex", q:"kneeling hip flexor stretch" },
+      { id:"calf-st", name:"Calf stretch on the wall", rx:"45 s each", how:"Hands on the wall, back leg straight, heel down. Then bend the back knee for the lower calf.", img:"calf-st", q:"calf stretch wall runners" },
+      { id:"ham-st", name:"Hamstring stretch", rx:"45 s each", how:"Heel on a step, leg straight, hinge from the hips with a flat back.", img:"ham-st", q:"standing hamstring stretch" },
+      { id:"fig4", name:"Figure-4 glute stretch", rx:"45 s each", how:"Sit, ankle on the opposite knee, lean forward with a straight back.", img:"fig4", q:"figure 4 glute stretch seated" },
+      { id:"ankle", name:"Ankle circles + knee to wall", rx:"30 s each", how:"Ten circles each way, then toes 10 cm from a wall, drive the knee to touch it without the heel lifting.", img:"ankle", q:"knee to wall ankle mobility" },
+      { id:"wgs", name:"World's greatest stretch", rx:"5 each side", how:"Long lunge, same-side hand to the floor, elbow to the instep, then rotate and reach to the sky. Slow.", img:"wgs", q:"world's greatest stretch runners warm up" },
+      { id:"inch", name:"Inchworm", rx:"6 reps", how:"Hands walk out to a plank, hold 1 s, feet walk back to the hands with straight legs.", img:"inch", q:"inchworm exercise warm up" },
+      { id:"legsw", name:"Leg swings", rx:"10 each, front and side", how:"Hold a wall. Swing the leg forward and back, then across the body. Loose, taller each swing.", img:"legsw", q:"leg swings dynamic warm up running" }
     ] }
     ],
-    lifts:[
-      { id:"incline-db", how:"Bench at 30°. Lower to your upper chest, press up and slightly in.", name:"Incline DB press", sets:3, reps:"10", rest:90, tempo:"Down 3 s, up 1 s", target:"Upper chest, front delts, triceps", eq:["Dumbbells","Incline bench"],
-        desc:"Press two dumbbells up from a bench set to about 30°. Builds the upper chest and front shoulders. Three sets, the last rep of each should be hard but clean.",
-        cues:["Bench at 30–45°. Pin shoulder blades back and down.","Lower to your upper chest, elbows about 45° from your body.","Press up and slightly in. Don't clank the dumbbells."],
-        alt:"Incline barbell press or an incline machine press." },
-      { id:"cable-fly", how:"Cables at chest height. Arms wide, bring the handles together in front of you.", name:"Cable fly", sets:3, reps:"12–15", rest:60, tempo:"Controlled", target:"Chest", eq:["Cable machine", "Two handles"],
-        desc:"Standing between two cables, sweep your arms together in a hug. Constant tension on the chest. Light weight, slow and squeezed.",
-        cues:["Slight bend in the elbows, keep it fixed.", "Squeeze at the front for one second.", "Open wide for the stretch, under control."],
-        alt:"Pec deck or dumbbell fly." },
-      { id:"lat-pd", how:"Palms facing. Pull the handle to your upper chest, elbows down.", name:"Lat pulldown, neutral grip", sets:3, reps:"10–12", rest:90, tempo:"Pull 1 s, lower 3 s", target:"Lats, upper back, biceps", eq:["Cable machine","Neutral-grip handle"],
-        desc:"Pull a neutral-grip handle down to your upper chest. Builds width in your back. Palms face each other, which is kinder to the shoulders.",
-        cues:["Lean back slightly, chest up.","Pull to your upper chest by driving the elbows down.","Let your arms fully stretch at the top, under control."],
-        alt:"Neutral-grip pull-ups, or a machine pulldown." },
-      { id:"cable-lat", how:"Low cable, one arm. Raise to shoulder height, lower slowly.", name:"Cable lateral raise", sets:3, reps:"12–15", rest:60, tempo:"Up 1 s, down 3 s", target:"Side delts", eq:["Cable machine","Single handle"],
-        desc:"Raise one arm out to the side against a low cable. The cable keeps tension the whole way, which is why it beats dumbbells for side delts.",
-        cues:["Cable low, slight lean away from the machine.","Lead with the elbow, raise to shoulder height.","Lower slowly. No swinging."],
-        alt:"Dumbbell lateral raise." },
-      { id:"ez-curl", how:"Elbows pinned to your sides. Curl up, lower in 2 s.", name:"EZ bar curl", sets:3, reps:"10–12", rest:60, tempo:"Up 1 s, down 2 s", target:"Biceps", eq:["EZ bar"],
-        desc:"Curl an EZ bar with your elbows pinned to your sides. The angled grip is easier on the wrists than a straight bar.",
-        cues:["Elbows pinned to your sides.","No hip swing. Full range, top to bottom.","Take 2 seconds to lower."],
-        alt:"Dumbbell curls." },
-      { id:"pushdown", how:"Rope at chest height. Push down to lockout, spread the rope at the bottom.", name:"Triceps pushdown", sets:3, reps:"12–15", rest:60, tempo:"Controlled", target:"Triceps", eq:["Cable machine", "Rope"],
-        desc:"The classic triceps finisher. Elbows pinned, push the rope down and apart, let it rise slowly.",
-        cues:["Elbows stay beside your ribs.", "Full lockout, spread the rope.", "Up in 2 seconds, no shrugging."],
-        alt:"V-bar pushdown or dumbbell kickbacks." }
-    ]
+    run:{ id:"run3", kick:"Run 3", name:"Long run", vk:"long", card:"5 km easy + 1 km hard",
+      what:"Your longest run. Five easy kilometres, then one comfortably hard, then a walk.",
+      feel:"Start slow. The last kilometre is short-sentences-only, like half-marathon effort.",
+      tip:"Add 0.5 km to the easy part every two weeks if the knee is quiet the next morning, and cap it at 8 km while you're cutting. Carry water. Go early, before the heat.",
+      steps:[{t:"Zone 2",d:"5 km easy",pk:"z2"},{t:"Finish",d:"1 km comfortably hard",pk:"thr"},{t:"Cool-down",d:"5 min walk"}],
+      desc:"Five kilometres easy Zone 2, then the last kilometre comfortably hard at about half-marathon pace, then a 5-minute walk.",
+      links:[["Zone 2 explained","zone 2 running explained nasal breathing","zone2"],["Threshold pace","threshold running pace explained"]],
+      phases:[
+        { n:"Zone 2, 5 km", km:5, rpe:"RPE 3–4", pk:"z2", note:"Conversational the whole way. Nose-breathing pace. The timer is the estimate at your pace." },
+        { n:"Threshold finish, 1 km", km:1, rpe:"RPE 7", pk:"thr", hard:true, note:"Comfortably hard, roughly half-marathon pace." },
+        { n:"Cooldown walk", d:300, rpe:"Walk", pk:null, note:"Walk it out. Great work." }
+      ]}
   },
-
   { cat:"power",
     hero:"back-squat",
     lines:["Upper 4", "shoulders, arms, legs B"],
