@@ -257,6 +257,15 @@ body:not(.has-coach) .tile.coach,body:not(.has-coach) .ibtn.coach{display:none}
 .cell.today .nm::after{content:"";position:absolute;left:0;right:0;bottom:0;height:2px;background:var(--accent);border-radius:1px}
 .cell .dot{margin:0}
 .cell.sel{background:var(--g3);box-shadow:0 0 0 1px var(--line)}
+.cell.done .dot{background:var(--good)}
+.card.kv{display:grid;grid-template-columns:auto 1fr;gap:10px 16px;font:400 15px/1.5 var(--ui);align-items:start}
+.card.kv b{font:600 11.5px/1.5 var(--ui);letter-spacing:.14em;text-transform:uppercase;color:var(--fg3);padding-top:3px}
+.card.kv span{min-width:0}
+.card.kv small{display:block;font-size:14px;color:var(--fg2);margin-top:2px}
+.card.tline{display:grid;gap:10px}
+.tlr{display:grid;grid-template-columns:52px 1fr;gap:12px;font:400 15px/1.5 var(--ui);padding-bottom:10px;border-bottom:1px solid var(--line)}
+.tlr b{font:500 17px/1.4 var(--serif);color:var(--fg)}
+.card.tline .muted{font-size:13.5px;line-height:1.5;margin:0}
 .week .sum{margin-top:12px;font:400 14px/1.45 var(--ui);color:var(--fg2);text-align:center;min-height:1.45em}
 .hubnext{margin:var(--gap) var(--gut) 0}
 .hubnext .upnext{margin-top:8px}
@@ -1020,6 +1029,185 @@ const PICT={"copenhagen":"<svg viewBox=\"0 0 480 320\" aria-hidden=\"true\"><def
 const ALT={"incline-db":{"name":"Incline barbell press","how":"Bench at 30\u00b0. Lower the bar to your upper chest, press up.","eq":["Barbell","Incline bench"]},"lat-pd":{"name":"Pull-ups","how":"Hang from the bar, pull your chest up to it, lower fully.","eq":["Pull-up bar"]},"cable-row":{"name":"One-arm dumbbell row","how":"Knee and hand on a bench. Row the dumbbell to your hip.","eq":["Dumbbell","Bench"]},"machine-press":{"name":"Dumbbell bench press","how":"Flat bench. Lower the dumbbells to chest level, press up.","eq":["Dumbbells","Flat bench"]},"cable-lat":{"name":"Dumbbell lateral raise","how":"Raise both arms to shoulder height, lower slowly.","eq":["Dumbbells"]},"rear-delt":{"name":"Cable rear delt fly","how":"Cables at shoulder height, pull the handles out wide.","eq":["Cable machine"]},"ez-curl":{"name":"Dumbbell curl","how":"Elbows pinned. Curl both dumbbells, lower in 2 s.","eq":["Dumbbells"]},"oh-tri":{"name":"Dumbbell overhead extension","how":"One dumbbell behind your head. Press to lockout.","eq":["Dumbbell"]},"back-squat":{"name":"Hack squat","how":"Feet mid-platform. Lower to parallel or below, drive up.","eq":["Hack squat machine"]},"bss":{"name":"Dumbbell reverse lunge","how":"Step back, drop the back knee, drive up. 6 each leg.","eq":["Dumbbells"]},"hip-thrust":{"name":"Barbell glute bridge","how":"Back on the floor, bar on your hips. Drive up and squeeze.","eq":["Barbell","Bar pad"]},"nordic":{"name":"Lying leg curl, slow negatives","how":"Curl fast, then lower over 5 seconds.","eq":["Lying leg curl machine"]},"calf":{"name":"Smith machine calf raise","how":"Toes on a block. Full stretch, then high on the big toe.","eq":["Smith machine","Block"]},"bench":{"name":"Dumbbell bench press","how":"Flat bench. Lower to chest level, press up. Heavy.","eq":["Dumbbells","Flat bench"]},"w-pullup":{"name":"Wide-grip lat pulldown","how":"Heavy. Pull the bar to your upper chest, elbows down.","eq":["Cable machine","Wide bar"]},"ohp":{"name":"Seated dumbbell press","how":"Seated. Press both dumbbells overhead, lower to ear height.","eq":["Dumbbells","Bench"]},"cs-row":{"name":"T-bar row","how":"Hinge over the bar. Row to your chest, squeeze.","eq":["T-bar row"]},"w-dip":{"name":"Close-grip bench press","how":"Hands shoulder-width. Lower to your lower chest, press up.","eq":["Barbell","Bench"]},"sl-rdl":{"name":"Stiff-legged dumbbell deadlift","how":"Two legs. Hinge at the hip, dumbbells down your shins.","eq":["Dumbbells"]},"leg-curl":{"name":"Lying leg curl","how":"Face down. Curl the pad up, release in 3 s.","eq":["Lying leg curl machine"]},"copenhagen":{"name":"Adductor machine","how":"Squeeze your knees together slowly, hold 1 s, release.","eq":["Adductor machine"]},"cable-fly":{"name":"Dumbbell fly","how":"Flat bench, dumbbells over your chest. Open wide, bring them together in a hug.","eq":["Dumbbells","Flat bench"]},"incline-curl":{"name":"Preacher curl","how":"Arms on the pad. Curl up, lower in 2 s to almost straight.","eq":["Preacher bench","EZ bar"]},"hammer":{"name":"Rope hammer curl","how":"Rope on the low cable, palms in. Curl, lower slowly.","eq":["Cable machine","Rope"]},"sa-pd":{"name":"Dumbbell pullover","how":"Lie across a bench, one dumbbell. Lower it behind your head, pull it back over your chest.","eq":["Dumbbell","Bench"]},"pushdown":{"name":"V-bar pushdown","how":"V-bar at chest height. Push down to lockout, elbows pinned.","eq":["Cable machine","V-bar"]},"goblet":{"name":"Leg press, feet high","how":"Feet high on the platform. Lower to 90\u00b0, press through the heels. Don't lock the knees.","eq":["Leg press machine"]},"rdl":{"name":"Stiff-legged dumbbell deadlift","how":"Dumbbells down the thighs, soft knees, hinge until the hamstrings stretch.","eq":["Dumbbells"]},"rev-lunge":{"name":"Bodyweight walking lunge","how":"Step forward, back knee low, drive through the front foot. Short steps.","eq":["Bodyweight"]}};
 </script>
 <script>
+/* ===== Race week: Gulf Bank 642 Marathon, 10K, Saturday 28 November 2026 =====
+   Dated overlay on the normal week. Each entry has the same shape as a DAYS entry
+   (cat, lines, kind, sub, blocks, run) plus `race` (the day's tracking list, food,
+   water, bed time) and, on gym days, `gym` (the coach's session + the leg rule).
+   The app swaps these in for the matching dates and goes back to the normal week after. */
+const RACE = (function () {
+  const base = DAYS.find(d => d.run && d.blocks), easyRun = DAYS.find(d => d.run && d.run.id === "run1") || base;
+  const pick = (bid, ids) => { const b = base.blocks.find(x => x.id === bid); return ids.map(id => b.items.find(it => it.id === id)).filter(Boolean); };
+  /* the short pre-run version: 15 minutes in two blocks */
+  const REHAB = { id: "rehab", title: "Knee rehab", kick: "Short version, race week", mins: 8, cat: "lower",
+    intro: "Eight minutes, the short race-week version. Quad control, glutes, balance and a little bounce. Nothing here should hurt; if the knee is warm, skip the hops.",
+    items: pick("rehab", ["tke", "slgb", "stepdown", "monster", "sidebr", "hops"]) };
+  const MOB = { id: "mob", title: "Mobility", kick: "Hips, quads, calves, ankles", mins: 7, cat: "rest",
+    intro: "Seven minutes to open what running tightens. Hold the stretches and breathe, then wake the legs with the swings.",
+    items: pick("mob", ["quad-st", "hipflex", "calf-st", "fig4", "ankle", "legsw"]) };
+  const RECOV = { id: "mob", title: "Mobility", kick: "Ten minutes, after", mins: 10, cat: "rest",
+    intro: "The daily recovery block: ten minutes after the session. Quads, hip flexors, calves, hamstrings, figure-4, ankles.",
+    items: pick("mob", ["quad-st", "hipflex", "calf-st", "ham-st", "fig4", "ankle"]) };
+  const blocks = () => [Object.assign({}, REHAB), Object.assign({}, MOB)];
+  const stride = (k, n) => ({ n: "Stride " + k + " of " + n, d: 20, rpe: "Fast, relaxed", pk: null, note: "Build for 5 s, fast and relaxed for 10 s at about 85%, ease off for 5 s. Tall, quick feet, loose hands." });
+  const walkBack = () => ({ n: "Walk back", d: 50, rpe: "Walk", pk: null, note: "Walk back to where you started. Shake the arms out." });
+  const strides = n => { const a = []; for (let k = 1; k <= n; k++) { a.push(stride(k, n)); if (k < n) a.push(walkBack()); } return a; };
+  const TIP_CUT = "Cut as normal. Put most of today's carbs before and after the run. Walk breaks are fine, the kilometres still count.";
+  const COMMON = { water: "2.5 L", bed: "21:30" };
+  const tick = (k, t, s) => ({ k, t, s });
+  const sleepT = (bed, extra) => tick("bed", "In bed by " + bed, extra || "Last screen 20:45, room cool and dark, no caffeine after 14:00");
+  const recT = () => tick("rec", "10 min mobility after", "Ice the knee 10 min any evening it feels warm");
+  const waterT = l => tick("water", l + " water", "Through the day, not all at once");
+
+  return {
+    name: "Gulf Bank 642 Marathon", dist: "10K", date: "2026-11-28", start: "06:00", goal: "75–85 min",
+    days: {
+      "2026-11-19": { cat: "run", lines: ["Intervals", "light"], kind: ["Race week", "D-9"], short: "Light intervals",
+        sub: "Short rehab, then 1 km easy, 3 × 600 m comfortably hard with 400 m jogs, 1 km easy. About 4.5 km.",
+        line: "Nine days out. The last touch of speed; nothing new from here.",
+        blocks: blocks(),
+        run: { id: "rw1", kick: "Race week · D-9", name: "Light intervals", vk: "vo2", card: "≈ 4.5 km",
+          what: "A kilometre easy, three 600-metre efforts at comfortably hard with a 400-metre jog between, a kilometre easy. The efforts are the only fast running left before the race.",
+          feel: "Comfortably hard on the 600s: short sentences, not gasping. Same pace on all three. The jogs are real recoveries.",
+          tip: TIP_CUT,
+          steps: [{ t: "Warm-up", d: "1 km easy", pk: "easy" }, { t: "Intervals", s: "3 × 600 m", d: "3 × 600 m comfortably hard, 400 m jog between", pk: "thr" }, { t: "Cool-down", d: "1 km easy", pk: "easy" }],
+          desc: "Light intervals after the short rehab and mobility blocks: 1 km easy, 3 × 600 m comfortably hard with 400 m jogs, 1 km easy.",
+          links: [["Comfortably hard explained", "threshold running pace explained beginners", "thr"], ["Interval form", "running form drills intervals", "strides"]],
+          phases: [
+            { n: "Easy, 1 km", km: 1, rpe: "RPE 3", pk: "easy", note: "Let the body warm up. Full sentences." },
+            { n: "600 m hard, 1 of 3", km: 0.6, rpe: "RPE 6–7", pk: "thr", hard: true, note: "Comfortably hard. Short sentences only. Same pace on all three." },
+            { n: "Jog, 400 m", km: 0.4, rpe: "Recover", pk: "jog", note: "Breathe it down. The rep is done, this part is rest." },
+            { n: "600 m hard, 2 of 3", km: 0.6, rpe: "RPE 6–7", pk: "thr", hard: true, note: "Tall, quick feet. Hold the form, not the breath." },
+            { n: "Jog, 400 m", km: 0.4, rpe: "Recover", pk: "jog", note: "Shake out the arms. One more." },
+            { n: "600 m hard, 3 of 3", km: 0.6, rpe: "RPE 6–7", pk: "thr", hard: true, note: "Last one, smoothest one. Relax the face." },
+            { n: "Cool-down, 1 km", km: 1, rpe: "RPE 2–3", pk: "easy", note: "Easy jog or walk. Bring it home." }
+          ] },
+        race: { tag: "D-9", food: "Cut", foodS: "Cut", foodNote: "Normal cut; no new fasting experiments this week. Most of today's carbs before and after the run.", water: COMMON.water, bed: COMMON.bed,
+          todo: [tick("pre", "Rehab + mobility before", "The short 15-minute version"), tick("run", "Light intervals run", "≈ 4.5 km"), tick("food", "Cut as normal", "Carbs around the run"), waterT("2.5 L"), recT(), sleepT("21:30")] } },
+
+      "2026-11-20": { cat: "upper", lines: ["Gym", "upper only"], kind: ["Race week", "D-8"], short: "Upper only",
+        sub: "The coach's upper session; skip every leg exercise. A 15-minute walk after.",
+        line: "No leg training at all from here until after the race. The upper gym keeps your routine and does not touch the race.",
+        gym: { name: "Coach's upper session", rx: "Skip every leg exercise", how: "The C5 session as written for the upper body. Every leg exercise is out this week: no squats, no leg press, no curls, no calves. Keep the rests, keep the weights.", mins: 60, walk: 15, sum: "Upper only" + " · " + "no legs" + " · " + "15 min walk" },
+        race: { tag: "D-8", food: "Cut", foodS: "Cut", foodNote: "Normal cut.", water: COMMON.water, bed: COMMON.bed,
+          todo: [tick("gym", "Coach's upper session", "No leg exercise"), tick("walk", "15 min walk after", "Keeps the legs loose without adding load"), tick("food", "Cut as normal", ""), waterT("2.5 L"), sleepT("21:30", "Add a 20-minute nap after Dhuhr if you can")] } },
+
+      "2026-11-21": { cat: "run", lines: ["Dress", "rehearsal"], kind: ["Race week", "D-7"], short: "Dress rehearsal 7 km",
+        sub: "Short rehab, then 1 km easy, 5 km at race effort, 1 km easy. Your longest run ever.",
+        line: "The one dress rehearsal. Note the pace on the 5 km: it sets Saturday's plan. Then every run gets shorter.",
+        blocks: blocks(),
+        run: { id: "rw2", kick: "Race week · D-7", name: "Dress rehearsal", vk: "z2", card: "7 km",
+          what: "One kilometre easy, five kilometres at race effort, one kilometre easy. Race effort means talking in short sentences, not gasping. Run-walk is allowed from the start if you prefer: 9 minutes run, 1 minute walk, same pace while running.",
+          feel: "The 5 km should feel like something you could hold for twice as long. If you are gasping by km 3 of it, slow down; that is the lesson, not a failure.",
+          tip: "Wear the race shoes, socks and shorts. Decide run-walk or not before you start, not during. Ice the knee 10 minutes tonight if it feels warm.",
+          steps: [{ t: "Warm-up", d: "1 km easy", pk: "easy" }, { t: "Race effort", s: "5 km race effort", d: "5 km at race effort, short sentences", pk: "race" }, { t: "Cool-down", d: "1 km easy", pk: "easy" }],
+          desc: "The dress rehearsal after the short rehab and mobility blocks: 1 km easy, 5 km at race effort, 1 km easy. Seven kilometres, the longest run so far.",
+          links: [["Race effort explained", "10k race pace effort how it should feel", "thr"], ["Run-walk method", "run walk method 10k beginners jeff galloway", "zone2"]],
+          phases: [
+            { n: "Easy, 1 km", km: 1, rpe: "RPE 3", pk: "easy", note: "Let the body warm up. Slower than feels right." },
+            { n: "Race effort, 5 km", km: 5, rpe: "RPE 5–6", pk: "race", note: "Short sentences, not gasping. Note the pace on the watch; it sets Saturday. Run-walk 9/1 if you chose it." },
+            { n: "Cool-down, 1 km", km: 1, rpe: "RPE 2–3", pk: "easy", note: "Easy jog or walk. The distance is done." }
+          ] },
+        race: { tag: "D-7", food: "Cut", foodS: "Cut", foodNote: "Normal cut. Carbs before and after the run.", water: COMMON.water, bed: COMMON.bed,
+          todo: [tick("pre", "Rehab + mobility before", "The short 15-minute version"), tick("run", "Dress rehearsal 7 km", "Note the 5 km pace"), tick("ice", "Ice the knee 10 min tonight", "If it feels warm"), tick("food", "Cut as normal", "Carbs before and after"), waterT("2.5 L"), sleepT("21:30")] } },
+
+      "2026-11-22": { cat: "upper", lines: ["Gym", "upper"], kind: ["Race week", "D-6"], short: "Upper, coach Day 1",
+        sub: "The coach's Day 1, upper body only. A 20-minute walk in the evening.",
+        line: "Six days out. Upper body only; the legs are saved for Saturday.",
+        gym: { name: "Coach's Day 1, upper", rx: "Upper body only", how: "The C5 Day 1 session as written. Nothing for the legs, not even calves. Keep the rests, keep the weights.", mins: 60, walk: 20, sum: "Upper only · no legs · 20 min walk" },
+        race: { tag: "D-6", food: "Cut", foodS: "Cut", foodNote: "Normal cut.", water: COMMON.water, bed: COMMON.bed,
+          todo: [tick("gym", "Coach's Day 1, upper only", "No legs"), tick("walk", "20 min walk in the evening", ""), tick("food", "Cut as normal", ""), waterT("2.5 L"), sleepT("21:30", "Nap after Dhuhr if you can")] } },
+
+      "2026-11-23": { cat: "run", lines: ["Run 1", "easy"], kind: ["Race week", "D-5"], short: "Easy run",
+        sub: "Short rehab, then 4 km easy, four strides, a 5-minute walk.",
+        line: "Five days out. Easy means easy; the strides keep the legs quick.",
+        blocks: blocks(),
+        run: Object.assign({}, easyRun.run, { id: "rw3", kick: "Race week · D-5", tip: TIP_CUT }),
+        race: { tag: "D-5", food: "Cut", foodS: "Cut", foodNote: "Normal cut. Carbs around the run.", water: COMMON.water, bed: COMMON.bed,
+          todo: [tick("pre", "Rehab + mobility before", "The short 15-minute version"), tick("run", "Easy 4 km + 4 strides", "Full sentences the whole way"), tick("food", "Cut as normal", "Carbs around the run"), waterT("2.5 L"), recT(), sleepT("21:30")] } },
+
+      "2026-11-24": { cat: "upper", lines: ["Gym", "upper only"], kind: ["Race week", "D-4"], short: "Upper only",
+        sub: "The coach's session minus the legs; calves at most, two light sets. The last gym day that counts.",
+        line: "Four days out. Nothing new of any kind after tomorrow.",
+        gym: { name: "Coach's Day 3, upper", rx: "No legs; calves at most, 2 light sets", how: "The C5 session as written for the upper body. If you want calves, two light sets, nowhere near failure. No deep-tissue massage from today; it leaves the legs heavy for two days.", mins: 60, walk: 15, sum: "Upper only · calves light at most · 15 min walk" },
+        race: { tag: "D-4", food: "Cut", foodS: "Cut", foodNote: "Normal cut, last full day of it tomorrow.", water: COMMON.water, bed: COMMON.bed,
+          todo: [tick("gym", "Coach's upper session", "Calves at most, 2 light sets"), tick("walk", "15 min walk after", ""), tick("food", "Cut as normal", ""), waterT("2.5 L"), sleepT("21:30")] } },
+
+      "2026-11-25": { cat: "run", lines: ["Pace", "rehearsal"], kind: ["Race week", "D-3"], short: "Pace rehearsal 5 km",
+        sub: "Short rehab, then 2 km easy, 2 km at race pace, 1 km easy, three strides. The cut ends tonight.",
+        line: "Three days out. Two kilometres at the pace you will run on Saturday, then the carbs go up.",
+        blocks: blocks(),
+        run: { id: "rw4", kick: "Race week · D-3", name: "Pace rehearsal", vk: "z2", card: "≈ 5 km",
+          what: "Two kilometres easy, two at race pace, one easy, then three strides. Race pace is what the dress rehearsal taught you, around 7:45–8:00 per kilometre.",
+          feel: "The race-pace kilometres should feel controlled, almost too easy. If Saturday's rehearsal left the knee warm, run these two easy instead.",
+          tip: "Last day of the cut: from tomorrow you eat at maintenance. Three litres of water a day from today.",
+          steps: [{ t: "Warm-up", d: "2 km easy", pk: "easy" }, { t: "Race pace", s: "2 km race pace", d: "2 km at race pace, controlled", pk: "race" }, { t: "Cool-down", d: "1 km easy", pk: "easy" }, { t: "Strides", s: "3 × 20 s strides", d: "3 × 20 s: build 5 s, fast and relaxed 10 s, ease off 5 s. Walk back between." }],
+          desc: "Pace rehearsal after the short rehab and mobility blocks: 2 km easy, 2 km at race pace, 1 km easy, three strides.",
+          links: [["Race pace explained", "10k race pace how it should feel", "thr"], ["Strides", "how to do running strides", "strides"]],
+          phases: [
+            { n: "Easy, 2 km", km: 2, rpe: "RPE 3", pk: "easy", note: "Let the body warm up. Full sentences." },
+            { n: "Race pace, 2 km", km: 2, rpe: "RPE 5–6", pk: "race", note: "Controlled, almost too easy. Short sentences. This is Saturday's pace." },
+            { n: "Cool-down, 1 km", km: 1, rpe: "RPE 2–3", pk: "easy", note: "Easy jog. Breathe it down before the strides." }
+          ].concat(strides(3)).concat([{ n: "Cool-down walk", d: 180, rpe: "Walk", pk: null, note: "Walk it out. Water now, three litres today." }]) },
+        race: { tag: "D-3", food: "Cut ends tonight", foodS: "Cut ends", foodNote: "Last day of the deficit. From tomorrow, maintenance with the carbs up.", water: "3 L", bed: "21:00",
+          todo: [tick("pre", "Rehab + mobility before", "The short 15-minute version"), tick("run", "Pace rehearsal 5 km", "2 km at race pace"), tick("food", "Cut, last day", "Maintenance from tomorrow"), waterT("3 L"), recT(), sleepT("21:00", "One of the two nights that matter most")] } },
+
+      "2026-11-26": { cat: "upper", lines: ["Upper light", "carbs up"], kind: ["Race week", "D-2"], short: "Upper light",
+        sub: "The coach's upper session at 70 %, fewer sets, nothing to failure, or rest. A 20-minute walk. Maintenance calories, 400–450 g carbs.",
+        line: "Two days out. Tonight's sleep is the one that counts; the body banks sleep two nights out.",
+        gym: { name: "Coach's upper session at 70 %", rx: "Fewer sets, nothing to failure, no legs", how: "Take the usual upper session and cut it: 70 % of the weights, two sets instead of three or four, stop well short of failure. If the legs feel heavy or you are short on sleep, rest instead; it costs nothing now.", mins: 40, walk: 20, sum: "Upper at 70 % or rest · 20 min walk" },
+        race: { tag: "D-2", food: "Maintenance, carbs up", foodS: "Carbs up", foodNote: "About 2,900–3,100 kcal: 400–450 g carbs (rice, potatoes, bread, oats, fruit, dates, honey), 200 g protein, fat moderate. The scale goes up 1–2 kg from glycogen and water; that is the point.", water: "3–3.5 L + electrolytes", bed: "21:00",
+          todo: [tick("gym", "Upper at 70 % or rest", "Fewer sets, nothing to failure"), tick("walk", "20 min walk", ""), tick("food", "Maintenance, 400–450 g carbs", "Rice, potatoes, bread, oats, fruit, dates"), tick("prot", "200 g protein", ""), tick("water", "3–3.5 L water + electrolytes", "A pinch of salt in food or a sachet"), sleepT("21:00", "The most important night of the week")] } },
+
+      "2026-11-27": { cat: "run", lines: ["Shake-out", "carbs"], kind: ["Race week", "D-1"], short: "Shake-out",
+        sub: "Morning: 2 km easy jog and three strides, or a 20-minute walk if the legs feel heavy. Ten minutes of mobility. Kit laid out, bib pinned, Garmin charged.",
+        line: "The day before. Nothing that makes you tired; everything that makes tomorrow simple.",
+        blocks: [Object.assign({}, RECOV, { title: "Mobility", kick: "Ten minutes, easy", intro: "Ten easy minutes after the jog. Hold the stretches and breathe; nothing deep, nothing new." })],
+        run: { id: "rw5", kick: "Race week · D-1", name: "Shake-out", vk: "z2", card: "2 km + strides",
+          what: "Two kilometres of easy jogging and three relaxed strides, in the morning. If the legs feel heavy, a 20-minute walk does the same job.",
+          feel: "Lighter than easy. Nothing on the clock; the legs should feel better at the end than at the start.",
+          tip: "Then: lay out the kit, pin the bib, charge the Garmin to 100 %, dinner by 19:00, low fibre, nothing new. In bed by 20:30–21:00; sleeping badly tonight is normal and costs nothing.",
+          steps: [{ t: "Easy jog", d: "2 km easy, or a 20 min walk", pk: "easy" }, { t: "Strides", s: "3 × 20 s strides", d: "3 × 20 s relaxed strides, walk back between" }, { t: "Mobility", d: "10 min, easy" }],
+          desc: "Shake-out: 2 km easy jog and three strides, or a 20-minute walk. Ten minutes of mobility after.",
+          links: [["Strides", "how to do running strides", "strides"], ["Day before a race", "what to do the day before a 10k race", "zone2"]],
+          phases: [
+            { n: "Easy jog, 2 km", km: 2, rpe: "RPE 2–3", pk: "easy", note: "Lighter than easy. Or walk 20 minutes if the legs feel heavy." }
+          ].concat(strides(3)).concat([{ n: "Cool-down walk", d: 120, rpe: "Walk", pk: null, note: "Walk it out, then the mobility block." }]) },
+        race: { tag: "D-1", food: "Maintenance, low fibre", foodS: "Low fibre", foodNote: "400–450 g carbs, 180 g protein. White rice over brown, peeled fruit, no big salads, no legumes, nothing spicy or fried, nothing new. Dinner by 19:00, light and familiar.", water: "3–3.5 L + electrolytes", bed: "20:30–21:00",
+          todo: [tick("run", "Shake-out: 2 km + 3 strides", "Or a 20 min walk"), tick("rec", "10 min mobility", "Easy, nothing deep"), tick("food", "Maintenance, low fibre, dinner by 19:00", "Nothing new"), tick("water", "3–3.5 L water + electrolytes", "Urine pale by the evening"), tick("kit", "Kit laid out, bib pinned, Garmin charged", "Shoes and socks you trained in; 2 dates or a gel in the pocket"), sleepT("20:30–21:00", "Sleeping badly tonight is normal")] } },
+
+      "2026-11-28": { cat: "power", lines: ["Race", "day"], kind: ["Gulf Bank 642", "10K"], short: "Race day",
+        sub: "The 10K. Easy for three, steady for five, whatever is there for two. Finish strong, knee quiet tomorrow.",
+        line: "Nothing you do today can make you faster. Breakfast, warm-up, start slow, and let everyone go.",
+        blocks: [{ id: "racewu", title: "Race warm-up", kick: "At 05:35, finish 10 min before the start", mins: 15, cat: "lower",
+          intro: "Fifteen minutes, starting at 05:35. Walk, easy jog, two glute exercises to switch the knee on, two strides. Be back at the corral ten minutes before the gun.",
+          items: [
+            { id: "wu-walk", name: "Walk", rx: "5 min", how: "Brisk walk away from the start and back. Shake the arms out, look around, breathe.", pict: null, q: "race day warm up routine 10k" },
+            { id: "wu-jog", name: "Easy jog", rx: "5 min", how: "Lighter than easy. Short quick steps, land under the hips. Nothing on the clock.", q: "easy jog warm up before race" }
+          ].concat(pick("rehab", ["slgb", "monster"]).map(it => Object.assign({}, it, it.id === "slgb" ? { rx: "10 each" } : { rx: "10 each way", how: "If you have the band: band above the knees, quarter squat, step sideways with the knees pushed out. Without it, 10 slow side steps in a quarter squat." }))).concat([
+            { id: "wu-strides", name: "Strides", rx: "2 × 20 s", how: "Build for 5 s, fast and relaxed for 10 s, ease off for 5 s. Walk back between. Then to the corral.", q: "how to do running strides" }
+          ]) }],
+        run: { id: "race10k", kick: "Race day", name: "Gulf Bank 642, 10K", vk: "z2", card: "10 km",
+          what: "Kilometres 1 to 3 easy, 8:15–8:30, slower than feels right; everyone around you will go out too fast, let them. Kilometres 4 to 8 steady, 7:45–8:00, breathing in short sentences, water at every station. Kilometres 9 and 10, whatever is there. The last 400 m is the only place to be brave.",
+          feel: "Run-walk option, decided before the start, not during: 9 minutes run, 1 minute walk from km 1, walking briskly, same pace targets while running. For a heavy runner at the end of a knee rehab this is a respectable way to run a first 10K.",
+          tip: "Knee: shorter, quicker steps, land under the hips, stay off the cambered road edge, no sprint finish if there is any twinge. Sharp pain, locking or a change in how the knee tracks: walk to the next marshal. Soreness the same on both legs is just the distance.",
+          steps: [{ t: "Km 1–3", d: "easy, slower than feels right", pk: "ez" }, { t: "Km 4–8", d: "steady, short sentences, water every station", pk: "race" }, { t: "Km 9–10", d: "whatever is there; brave in the last 400 m", pk: "race" }],
+          desc: "The 10K. Start the Garmin Run activity on the line, auto-lap every kilometre. This player gives the pace cues by estimated time; the watch has the real distance.",
+          links: [["Pacing a first 10K", "how to pace your first 10k race", "thr"], ["Run-walk method", "run walk method 10k beginners jeff galloway", "zone2"]],
+          phases: [
+            { n: "Km 1 to 3, easy", km: 3, rpe: "RPE 4", pk: "ez", note: "8:15–8:30 per km, slower than feels right. Let them all go; you will see most of them again." },
+            { n: "Km 4 to 8, steady", km: 5, rpe: "RPE 5–6", pk: "race", note: "7:45–8:00 per km, short sentences. Water at every station, 2–3 sips; walk the station if that is easier." },
+            { n: "Km 9 and 10", km: 2, rpe: "RPE 7–8", pk: "race", hard: true, note: "Whatever is there. Tall, quick feet, arms driving. The last 400 m is the only place to be brave." },
+            { n: "Cool-down walk", d: 600, rpe: "Walk", pk: null, note: "Walk 10 minutes. Carbs and protein within the hour. Ice the knee 10 minutes this evening." }
+          ] },
+        race: { tag: "Race", race: true, food: "Race breakfast, then maintenance", foodNote: "Breakfast 2 hours before the start: 80–100 g carbs, oats or white toast, banana, honey or 3–4 dates, 400–500 ml water; coffee only if you always run with it. Optional 1 gel or 2 dates at 40–45 min. After: carbs and protein within the hour, 40 g protein in the first meal. Back to the cut from Sunday.", water: "400–500 ml with breakfast, then sips", bed: "Early; no running Sunday and Monday",
+          timeline: [["03:45", "Up. Breakfast: oats or white toast, banana, honey or 3–4 dates, 400–500 ml water. Nothing you have not eaten before a run."], ["04:30", "Bathroom, kit on, bib pinned, Garmin charged and on the left wrist."], ["04:50", "Fajr."], ["05:00", "Leave. Arrive by 05:20, drop the bag, toilet again."], ["05:35", "Warm-up, the block above. Finish 10 min before the start."], ["05:50", "Corral, towards the back of the 10K field. Two sips of water. Start the Run activity on the line, not the gun."], ["06:00", "Start. Km 1–3 easy."]],
+          shift: "The start time is not published yet; this assumes 06:00. If the 10K starts at 07:00, shift every row one hour later except Fajr.",
+          todo: [tick("bf", "Breakfast 2 h before: 80–100 g carbs", "Oats or toast, banana, honey or dates, 400–500 ml water"), tick("pre", "Warm-up at 05:35", "Walk, jog, bridges, band walks, 2 strides"), tick("run", "The 10K", "Easy, steady, then whatever is there"), tick("after", "Walk 10 min, carbs + protein within 1 h", "40 g protein in the first meal"), tick("ice", "Ice the knee 10 min this evening", "No running Sunday and Monday; 3 km easy on Tuesday")] } }
+    }
+  };
+})();
+</script>
+<script>
 
 (function () {
   "use strict";
@@ -1048,6 +1236,16 @@ const ALT={"incline-db":{"name":"Incline barbell press","how":"Bench at 30\u00b0
   const fmtMin = m => m >= 60 ? Math.floor(m / 60) + " h" + (Math.round(m % 60) ? " " + pad(Math.round(m % 60)) : "") : Math.round(m) + " min";
   const fmtPace = s => Math.floor(s / 60) + ":" + pad(Math.round(s % 60));
   const relDay = i => i === TODAY ? "Today" : i === (TODAY + 1) % 7 ? "Tomorrow" : i === (TODAY + 6) % 7 ? "Yesterday" : FULL[i];
+  const iso = d => d.getFullYear() + "-" + pad(d.getMonth() + 1) + "-" + pad(d.getDate());
+  /* race week: dated days replace this week's normal days, then the normal week comes back by itself */
+  const RACEON = typeof RACE !== "undefined";
+  if (RACEON) DAYS.forEach((d, i) => { const r = RACE.days[iso(dateOf(i))]; if (r) DAYS[i] = r; });
+  const raceIn = () => RACEON ? Math.round((new Date(RACE.date + "T00:00:00") - new Date(NOW.getFullYear(), NOW.getMonth(), NOW.getDate())) / 864e5) : null;
+  const RK = "hw3:race"; let RD = S.get(RK, null) || {};
+  const rdOf = i => RD[iso(dateOf(i))] || {};
+  const rTick = (i, k) => !!rdOf(i)[k];
+  function setTick(i, k, v) { const key = iso(dateOf(i)); RD[key] = RD[key] || {}; if (v) RD[key][k] = 1; else delete RD[key][k]; S.set(RK, RD); }
+  function raceProg(i) { const td = DAYS[i].race.todo; return { done: td.filter(x => rTick(i, x.k)).length, total: td.length }; }
   const rxTxt = e => e.sets + " × " + (e.rxs || e.reps);
   const SEP = " · ";
 
@@ -1085,25 +1283,26 @@ const ALT={"incline-db":{"name":"Incline barbell press","how":"Bench at 30\u00b0
   function zone2() { const a = pref.age; if (!a) return null; const max = 220 - a; return { lo: Math.round(max * 0.6), hi: Math.round(max * 0.7), max }; }
 
   /* ============ pace maths ============ */
-  const DEF = { easy: [465, 510], z2: [465, 510], jog: [510, 570], vo2: [360, 400], thr: [405, 450], typical: true };
+  const DEF = { easy: [465, 510], z2: [465, 510], jog: [510, 570], vo2: [360, 400], thr: [405, 450], race: [465, 480], ez: [495, 510], typical: true };
   const mid = r => (r[0] + r[1]) / 2;
   const kmh = r => (3600 / ((r[0] + r[1]) / 2)).toFixed(1);
   const paceCell = r => pref.tm ? kmh(r) + '<small>km/h, 1%</small>' : paceOne(r) + '<small>min/km</small>';
   const paceWord = r => pref.tm ? kmh(r) + " km/h at 1% incline" : "about " + paceOne(r) + " /km";
   const kindOf = d => d.kind || (d.rest ? ["Rest", "day"] : d.run && d.lifts ? ["Run,", "then lift"] : d.run ? ["Run", "day"] : ["Lift", "day"]);
-  const dayKind = d => d.rest ? "Rest day" : d.run ? "Run day" : "Lift day";
+  const dayKind = d => d.race ? (d.race.race ? "Race day" : "Race week" + SEP + d.race.tag) : d.rest ? "Rest day" : d.run ? "Run day" : d.gym ? "Gym day" : "Lift day";
   const blkMins = d => (d.blocks || []).reduce((a, b) => a + b.mins, 0);
   function dayItems(d) {
     const it = [];
     (d.blocks || []).forEach(b => it.push(b.title));
     if (d.run) it.push(d.run.name + " " + d.run.card);
+    if (d.gym) it.push(d.gym.name, d.gym.walk + " min walk");
     (d.lifts || []).forEach(e => it.push(e.name));
     return it;
   }
   function paces() {
     const t = pref.k5; if (!t) return DEF;
     const p = t / 5;
-    return { easy: [p * 1.28, p * 1.42], z2: [p * 1.28, p * 1.42], jog: [p * 1.4, p * 1.55], vo2: [p * 0.97, p * 1.02], thr: [p * 1.07, p * 1.12], typical: false };
+    return { easy: [p * 1.28, p * 1.42], z2: [p * 1.28, p * 1.42], jog: [p * 1.4, p * 1.55], vo2: [p * 0.97, p * 1.02], thr: [p * 1.07, p * 1.12], race: [p * 1.28, p * 1.33], ez: [p * 1.37, p * 1.42], typical: false };
   }
   const phaseDur = p => p.km ? Math.round(p.km * mid(paces()[p.pk || "easy"])) : p.d;
   const paceOne = r => fmtPace((r[0] + r[1]) / 2);
@@ -1129,12 +1328,14 @@ const ALT={"incline-db":{"name":"Incline barbell press","how":"Bench at 30\u00b0
     m += blkMins(d);
     (d.lifts || []).forEach(e => { m += liftMins(e); });
     if (d.run) m += runStats(d.run).mins;
+    if (d.gym) m += d.gym.mins + d.gym.walk;
     return m;
   }
   const setsOf = d => (d.lifts || []).reduce((a, e) => a + e.sets, 0);
   const isBar = e => e.eq.some(x => /barbell|trap bar|EZ bar/i.test(x));
   function daySummary(d) {
     if (d.lifts) return d.lifts.length + " lifts" + SEP + setsOf(d) + " sets" + SEP + "≈ " + fmtMin(dayMins(d));
+    if (d.gym) return d.gym.sum + SEP + "≈ " + fmtMin(dayMins(d));
     const rs = runStats(d.run);
     return "Rehab + mobility" + SEP + rs.km + " km" + SEP + "≈ " + fmtMin(dayMins(d));
   }
@@ -1149,7 +1350,12 @@ const ALT={"incline-db":{"name":"Incline barbell press","how":"Bench at 30\u00b0
   function gymDone(i) { let n = 0; (DAYS[i].lifts || []).forEach(e => { n += doneOf(i, e); }); return n; }
   function nextTraining(i) { for (let s = 1; s <= 7; s++) { const j = (i + s) % 7; if (!DAYS[j].rest) return j; } return i; }
   const blkDone = (i, bi) => !!GYM.blk[i + ":" + bi];
-  function flagBlock(i, bi) { GYM.blk[i + ":" + bi] = 1; saveGym(); if (sessionEl.classList.contains("on") && curDay === i) renderSession(i, true); }
+  function flagBlock(i, bi) {
+    GYM.blk[i + ":" + bi] = 1; saveGym();
+    const d = DAYS[i];
+    if (d.race && d.blocks.every((b, k) => blkDone(i, k))) { const key = ["pre", "rec"].find(k => d.race.todo.some(x => x.k === k)); if (key) setTick(i, key, true); }
+    if (sessionEl.classList.contains("on") && curDay === i) renderSession(i, true);
+  }
   const runDone = i => !!(RT && RT.day === i && RT.n >= DAYS[i].run.phases.length);
 
   /* ============ pages ============ */
@@ -1166,10 +1372,21 @@ const ALT={"incline-db":{"name":"Incline barbell press","how":"Bench at 30\u00b0
   function renderHero() {
     const i = heroDay, d = DAYS[i], rs = d.run ? runStats(d.run) : null;
     const stats = [];
-    if (d.lifts) { stats.push([d.lifts.length, "lifts"], [setsOf(d), "sets"]); }
-    if (d.blocks) stats.push([blkMins(d) + " min", d.run ? "pre-run" : "rehab"]);
-    if (rs) stats.push([rs.km + " km", "run"]);
-    stats.push(["≈ " + fmtMin(dayMins(d)), "total"]);
+    if (d.race) {
+      const r = d.race;
+      if (r.race) stats.push([rs.km + " km", "race"], [RACE.start, "start"], ["75–85", "goal"]);
+      else {
+        if (rs) stats.push([rs.km + " km", "run"]);
+        if (d.gym) stats.push(["Upper", "no legs"], [d.gym.walk + " min", "walk"]);
+        else if (d.blocks) stats.push([blkMins(d) + " min", d.blocks.length > 1 ? "rehab" : "after"]);
+        stats.push([r.bed.split("–")[0], "in bed"]);
+      }
+    } else {
+      if (d.lifts) { stats.push([d.lifts.length, "lifts"], [setsOf(d), "sets"]); }
+      if (d.blocks) stats.push([blkMins(d) + " min", d.run ? "pre-run" : "rehab"]);
+      if (rs) stats.push([rs.km + " km", "run"]);
+      stats.push(["≈ " + fmtMin(dayMins(d)), "total"]);
+    }
     setCat(heroEl, d.cat);
     heroEl.innerHTML =
       '<span class="eb tint"><i class="dot"></i>' + (i === TODAY ? "Today" : FULL[i]) + SEP + dayKind(d) + '</span>' +
@@ -1179,7 +1396,7 @@ const ALT={"incline-db":{"name":"Incline barbell press","how":"Bench at 30\u00b0
       '<div class="cta"><button type="button" class="btn" data-act="open" data-d="' + i + '">' + (i === TODAY ? "Begin today's session" : "Open " + FULL[i]) + '</button>' +
       '<button type="button" class="btn ghost sq" data-act="share" data-d="' + i + '" aria-label="Share this session as an image">' + I.share + '</button></div>';
     $$(".cell", deck).forEach((c, k) => { c.classList.toggle("sel", k === i); c.setAttribute("aria-pressed", k === i); });
-    $("#weekSum").innerHTML = esc(i === TODAY ? weekSummary() : daySummary(d)) + (i !== TODAY ? SEP + '<button type="button" class="lnk inl" data-act="today">Back to today</button>' : "");
+    $("#weekSum").innerHTML = esc(i === TODAY ? weekSummary() : (d.race ? raceLine(i) : daySummary(d))) + (i !== TODAY ? SEP + '<button type="button" class="lnk inl" data-act="today">Back to today</button>' : "");
     $("#hubNext").innerHTML = '<div class="eb">' + (i === TODAY ? "Up next" : "After " + FULL[i]) + '</div>' + upNext(i);
   }
   function renderHub() {
@@ -1187,7 +1404,8 @@ const ALT={"incline-db":{"name":"Incline barbell press","how":"Bench at 30\u00b0
     $("#hubTitle").textContent = pref.name; $("#hubTitle").classList.toggle("long", pref.name.length > 12); document.title = pref.name;
     deck.innerHTML = DAYS.map((d, i) => {
       const dt = dateOf(i);
-      return '<button type="button" class="cell' + (i === TODAY ? " today" : "") + '" data-cat="' + d.cat + '" data-act="day" data-d="' + i + '" role="listitem" aria-label="' + FULL[i] + ' ' + dt.getDate() + ', ' + esc(d.lines.join(" ")) + '">' +
+      const pr = d.race ? raceProg(i) : null;
+      return '<button type="button" class="cell' + (i === TODAY ? " today" : "") + (pr && pr.done >= pr.total ? " done" : "") + '" data-cat="' + d.cat + '" data-act="day" data-d="' + i + '" role="listitem" aria-label="' + FULL[i] + ' ' + dt.getDate() + ', ' + esc(d.lines.join(" ")) + '">' +
         '<span class="wd">' + TINY[i] + '</span><span class="nm">' + dt.getDate() + '</span><i class="dot"></i></button>';
     }).join("");
     renderHero();
@@ -1215,7 +1433,12 @@ const ALT={"incline-db":{"name":"Incline barbell press","how":"Bench at 30\u00b0
     const ni = nextTraining(i), nd = DAYS[ni];
     return '<button type="button" class="upnext" data-act="open" data-d="' + ni + '" data-cat="' + nd.cat + '"><span class="d">' + SHORT[ni] + '</span><span class="tx"><b>' + esc(nd.lines.join(SEP)) + '</b><span>' + esc(daySummary(nd)) + '</span></span>' + I.chev + '</button>';
   }
+  function raceLine(i) {
+    const d = DAYS[i], pr = raceProg(i), n = raceIn() - (i - TODAY);
+    return (d.race.race ? "Race day" : n === 1 ? "Race tomorrow" : "Race in " + n + " days") + SEP + pr.done + " of " + pr.total + " ticked" + SEP + (d.race.race ? "breakfast 2 h before" : d.race.food.toLowerCase());
+  }
   function weekSummary() {
+    if (DAYS[TODAY].race) return raceLine(TODAY);
     const nl = DAYS.filter(d => d.lifts).length, nr = DAYS.filter(d => d.run).length, m = DAYS.reduce((a, d) => a + (d.rest ? 0 : dayMins(d)), 0);
     return nl + " lift days" + SEP + nr + " runs" + SEP + "≈ " + fmtMin(m) + " this week";
   }
@@ -1268,6 +1491,18 @@ const ALT={"incline-db":{"name":"Incline barbell press","how":"Bench at 30\u00b0
         : done >= total ? '<button type="button" class="btn done" data-act="slide" data-to="' + finishIdx(i) + '">Session complete</button>'
         : done ? '<button type="button" class="btn" data-act="slide" data-to="' + liftIdx(i, nextE) + '">Continue' + SEP + esc(GYM.swap[gk(i, nextE.id)] && ALT[nextE.id] ? ALT[nextE.id].name : nextE.name) + '</button>'
         : '<button type="button" class="btn" data-act="slide" data-to="0">' + (d.warmup ? "Begin with the warm-up" : "Begin the lifts") + '</button>';
+    } else if (d.gym) {
+      const g = d.gym, gd = rTick(i, "gym"), wd = rTick(i, "walk");
+      html += '<div class="prog"><div class="pbar"><span style="width:' + Math.round((gd + wd) / 2 * 100) + '%"></span></div><div class="cap"><span' + (gd ? ' style="color:var(--good)"' : "") + '>Gym</span>' + SEP + '<span' + (wd ? ' style="color:var(--good)"' : "") + '>Walk</span></div><div class="rule"><i class="dot"></i><span>' + esc(g.rx) + '</span></div></div>';
+      html += secHd(1, g.name, "≈ " + g.mins + " min", null) +
+        '<div class="card list"><button type="button" class="row nothumb" data-act="rtick" data-d="' + i + '" data-k="gym"><span class="tx"><b>' + esc(g.name) + '</b><span>' + (gd ? "Done" : "Tap when it is done") + '</span></span><span class="rt">' + ringSm(gd ? 1 : 0, 1) + '</span></button>' +
+        '<div class="sub-rows"><p class="how" style="margin:0">' + esc(g.how) + '</p></div></div>';
+      html += secHd(2, "Walk", g.walk + " min", null, '<button type="button" class="pillb" data-act="rest" data-s="' + (g.walk * 60) + '" data-n="Walk" aria-label="Start the ' + g.walk + '-minute walk timer">' + I.clock + pad(g.walk) + ':00</button>') +
+        '<div class="card list"><button type="button" class="row nothumb" data-act="rtick" data-d="' + i + '" data-k="walk"><span class="tx"><b>' + g.walk + ' min walk</b><span>' + (wd ? "Done" : "Keeps the legs loose without adding load") + '</span></span><span class="rt">' + ringSm(wd ? 1 : 0, 1) + '</span></button></div>';
+      html += raceSections(i, d, 3);
+      bar = gd && wd ? '<button type="button" class="btn done" data-act="hub">Day done' + SEP + 'back home</button>'
+        : gd ? '<button type="button" class="btn" data-act="rest" data-s="' + (g.walk * 60) + '" data-n="Walk">Start the ' + g.walk + ' min walk</button>'
+        : '<button type="button" class="btn" data-act="rtick" data-d="' + i + '" data-k="gym">Mark the gym done</button>';
     } else {
       const run = d.run, rs = runStats(run), P = paces(), bd = d.blocks.map((b, bi) => blkDone(i, bi)), rd = runDone(i);
       const parts = bd.concat([rd]), pct = Math.round(parts.filter(Boolean).length / parts.length * 100);
@@ -1282,6 +1517,7 @@ const ALT={"incline-db":{"name":"Incline barbell press","how":"Bench at 30\u00b0
         '<div class="linkrow"><button type="button" class="lnk" data-act="rg" data-d="' + i + '">Phases &amp; videos</button><button type="button" class="lnk" data-act="run" data-d="' + i + '">Run detail</button></div></div>' +
         secHd(d.blocks.length + 2, "Finish", "", 'data-act="slide" data-to="0"') +
         '<div class="card list"><button type="button" class="row nothumb" data-act="slide" data-to="0"><span class="tx"><b>Finish &amp; share</b><span>' + (rd ? "Run complete" : bd.every(Boolean) ? "Rehab and mobility done" : "After the run") + '</span></span><span class="rt">' + I.chev + '</span></button></div>';
+      if (d.race) html += raceSections(i, d, d.blocks.length + 3);
       const firstBlk = bd.indexOf(false), live = liveRunBtn(i);
       bar = rd ? '<button type="button" class="btn done" data-act="slide" data-to="0">Finish</button>'
         : live ? live
@@ -1292,6 +1528,15 @@ const ALT={"incline-db":{"name":"Incline barbell press","how":"Bench at 30\u00b0
     sbody.innerHTML = '<div class="wrap' + (keepScroll ? "" : " rv") + '">' + html + '</div>';
     sbar.innerHTML = '<div class="pr">' + bar + '</div>';
     if (keepScroll) sbody.scrollTop = top;
+  }
+  /* race week: the day's tick list, the food / water / sleep card, and the race-day timeline */
+  function raceSections(i, d, n) {
+    const r = d.race, pr = raceProg(i);
+    let h = secHd(n, "Track today", pr.done + " of " + pr.total, null) + '<div class="card list">' +
+      r.todo.map(x => { const on = rTick(i, x.k); return '<button type="button" class="row nothumb" data-act="rtick" data-d="' + i + '" data-k="' + x.k + '" aria-pressed="' + on + '"><span class="tx"><b>' + esc(x.t) + '</b>' + (x.s ? '<span>' + esc(x.s) + '</span>' : "") + '</span><span class="rt">' + ringSm(on ? 1 : 0, 1) + '</span></button>'; }).join("") + '</div>';
+    h += secHd(n + 1, "Food, water, sleep", "", null) + '<div class="card kv"><b>Food</b><span>' + esc(r.food) + (r.foodNote ? '<small>' + esc(r.foodNote) + '</small>' : "") + '</span><b>Water</b><span>' + esc(r.water) + '</span><b>In bed</b><span>' + esc(r.bed) + '</span></div>';
+    if (r.timeline) h += secHd(n + 2, "Timeline", RACE.start + " start, assumed", null) + '<div class="card tline">' + r.timeline.map(x => '<div class="tlr"><b>' + x[0] + '</b><span>' + esc(x[1]) + '</span></div>').join("") + '<p class="muted">' + esc(r.shift) + '</p></div>';
+    return h;
   }
   function runSteps(run, P) {
     return run.steps.map((st, k) => '<div class="step"><i>' + (k + 1) + '</i><div><b>' + esc(st.t) + '</b><span class="d">' + esc(st.d) + '</span></div>' + (st.pk ? '<div class="pace">' + paceCell(P[st.pk]) + '</div>' : '<div></div>') + '</div>').join("");
@@ -1605,10 +1850,12 @@ const ALT={"incline-db":{"name":"Incline barbell press","how":"Bench at 30\u00b0
     vo2: ["Hard but controlled. Same pace as rep one.", "Drive the arms, stay tall. Hold this to the line.", "Last stretch. Relax the face, hold the form."],
     cool: ["Easy now. Let the heart rate come down.", "Loosen the shoulders, shake the arms out.", "Nearly home. Short stride, slow breath."],
     thr: ["Comfortably hard. Short sentences only.", "Tall posture, quick feet. The hard part is behind you.", "Hold it. Finish this kilometre clean."],
-    walk: ["Walk it out. Breathe.", "Shake the legs out. Drink when you get back.", "That's the run done. Ice the knee ten minutes if it feels warm."]
+    walk: ["Walk it out. Breathe.", "Shake the legs out. Drink when you get back.", "That's the run done. Ice the knee ten minutes if it feels warm."],
+    race: ["Steady. Short sentences, nothing more.", "This is the pace. Shoulders loose, quick feet.", "Water at the station, two or three sips. Walk through it if that is easier.", "Hold it. You are doing exactly what the plan said."],
+    ez: ["Slower than feels right. Let them all go.", "Easy. Full sentences. You will see most of them again.", "Short quick steps, land under the hips, off the road edge."]
   };
   const KNEE = "Knee check. No sharp pain? Keep going. If there is, walk it from here.";
-  const START = { z2: "Settle in. Slower than feels natural is right.", easy: "Easy. Let the body warm up.", jog: "Recover. Breathe it down.", vo2: "Go. Strong and controlled.", thr: "Pick it up. Comfortably hard.", walk: "Walk. Well done." };
+  const START = { z2: "Settle in. Slower than feels natural is right.", easy: "Easy. Let the body warm up.", jog: "Recover. Breathe it down.", vo2: "Go. Strong and controlled.", thr: "Pick it up. Comfortably hard.", walk: "Walk. Well done.", race: "Steady now. Short sentences, settle into the pace.", ez: "Easy start. Slower than feels right; let everyone go." };
   let COACH = null;
   function coach(text, speak) { COACH = { text, until: Date.now() + 22000 }; if (speak !== false) say(text); buzz([70]); paintRun(); }
   function announcePhase(p) {
@@ -1656,6 +1903,7 @@ const ALT={"incline-db":{"name":"Incline barbell press","how":"Bench at 30\u00b0
       say("Run complete. " + runStats(d.run).km + " kilometres. Great work, walk it off."); beep(660, 1, 0.6); buzz([400]); toast("Run complete", runStats(d.run).km + " km" + SEP + d.run.kick + SEP + d.run.name);
       metro(false); unwake();
       if (runPill) { pLabel.textContent = "Run done"; pTime.textContent = runStats(d.run).km + " km"; pill.classList.add("go"); setTimeout(() => { if (runPill) { runPill = false; pill.classList.remove("on", "go"); } }, 4000); }
+      if (d.race) setTick(RT.day, "run", true);
       if (sessionEl.classList.contains("on")) renderSession(curDay, true);
       refreshRunPage();
     } else {
@@ -1683,7 +1931,7 @@ const ALT={"incline-db":{"name":"Incline barbell press","how":"Bench at 30\u00b0
         if (s === 15 && /^Stride/.test(p.n) && !RTsaid.s15) { RTsaid.s15 = 1; coach("Now fast and relaxed.", true); }
         if (s === 5 && /^Stride/.test(p.n) && !RTsaid.s5) { RTsaid.s5 = 1; coach("Ease off.", true); }
         const marks = dur >= 240 ? [0.25, 0.5, 0.75] : dur >= 100 ? [0.5] : [];
-        marks.forEach((m, mi) => { const key = "m" + m; if (frac >= m && !RTsaid[key]) { RTsaid[key] = 1; const cool = /cool/i.test(p.n) && p.pk, set = (cool ? CUES.cool : CUES[p.pk || "walk"]) || CUES.easy; const line = (m === 0.5 && dur >= 600 && p.pk === "z2") ? KNEE : set[cool ? Math.min(mi, set.length - 1) : (RT.n + mi) % set.length]; coach((m === 0.5 ? "Halfway. " : "") + line); } });
+        marks.forEach((m, mi) => { const key = "m" + m; if (frac >= m && !RTsaid[key]) { RTsaid[key] = 1; const cool = /cool/i.test(p.n) && p.pk, set = (cool ? CUES.cool : CUES[p.pk || "walk"]) || CUES.easy; const line = (m === 0.5 && dur >= 600 && (p.pk === "z2" || p.pk === "race")) ? KNEE : set[cool ? Math.min(mi, set.length - 1) : (RT.n + mi) % set.length]; coach((m === 0.5 ? "Halfway. " : "") + line); } });
       }
       const v = rtView(); rvTime.textContent = v.txt; rvPrg.setAttribute("stroke-dashoffset", CIRC * (1 - v.frac));
       if (!(Math.floor(Date.now() / 1000) % 2)) paintRun();
@@ -1816,6 +2064,8 @@ const ALT={"incline-db":{"name":"Incline barbell press","how":"Bench at 30\u00b0
     const items = [];
     (d.blocks || []).forEach(b => items.push([b.title + SEP + b.items.length + " exercises", b.mins + " min"]));
     if (d.run) { const P = paces(); d.run.steps.forEach(st => items.push([st.t + SEP + st.d.split(":")[0], st.pk ? (pref.tm ? kmh(P[st.pk]) + " km/h" : paceOne(P[st.pk]) + " /km") : ""])); }
+    if (d.gym) items.push([d.gym.name, d.gym.rx], [d.gym.walk + " min walk", ""]);
+    if (d.race) items.push(["Food" + SEP + d.race.food, ""], ["In bed by " + d.race.bed, d.race.water]);
     (d.lifts || []).forEach(e => items.push([e.name, rxTxt(e)]));
     const rows = Math.min(items.length, 10), rowH = 92;
     items.slice(0, rows).forEach((it, k) => {
@@ -1829,7 +2079,7 @@ const ALT={"incline-db":{"name":"Incline barbell press","how":"Bench at 30\u00b0
     });
     if (items.length > rows) { ctx.fillStyle = T.fg2; ctx.font = '400 32px ' + SANS; ctx.fillText("+ " + (items.length - rows) + " more", 124, y + 40 + rowH * rows); }
     ctx.fillStyle = T.fg2; ctx.font = '600 30px ' + SANS;
-    const foot = "≈ " + fmtMin(dayMins(d)) + (d.run ? SEP + runStats(d.run).km + " km" : SEP + setsOf(d) + " sets");
+    const foot = "≈ " + fmtMin(dayMins(d)) + (d.run ? SEP + runStats(d.run).km + " km" : d.gym ? SEP + "upper only" : SEP + setsOf(d) + " sets");
     ctx.fillText(foot, 80, H - 120); ctx.textAlign = "right"; ctx.fillText("Plan by @wahab.alsaleh", W - 80, H - 120); ctx.textAlign = "left";
     return await new Promise(res => c.toBlob(res, "image/png"));
   }
@@ -1850,7 +2100,7 @@ const ALT={"incline-db":{"name":"Incline barbell press","how":"Bench at 30\u00b0
       ctx.fillStyle = T.fg; ctx.font = '600 36px ' + SANS; ctx.fillText(d.lines[0], 330, y + 56);
       ctx.fillStyle = T.fg2; ctx.font = '400 32px ' + SANS; ctx.fillText(d.lines[1] || "", 330, y + 104);
       ctx.textAlign = "right"; ctx.fillStyle = T.fg2; ctx.font = '600 32px ' + SANS;
-      ctx.fillText(d.lifts ? d.lifts.length + " lifts" + SEP + setsOf(d) + " sets" : "Rehab + mobility" + SEP + runStats(d.run).km + " km", W - 80, y + 56);
+      ctx.fillText(d.lifts ? d.lifts.length + " lifts" + SEP + setsOf(d) + " sets" : d.gym ? d.gym.sum.split(SEP)[0] + SEP + d.gym.walk + " min walk" : (d.blocks && d.blocks.length > 1 ? "Rehab + mobility" : "Run") + SEP + runStats(d.run).km + " km", W - 80, y + 56);
       ctx.font = '400 30px ' + SANS; ctx.fillText("≈ " + fmtMin(dayMins(d)), W - 80, y + 104); ctx.textAlign = "left";
       if (r < 6) { ctx.fillStyle = T.line; ctx.fillRect(80, y + rowH - 12, W - 160, 2); }
     });
@@ -1946,6 +2196,7 @@ const ALT={"incline-db":{"name":"Incline barbell press","how":"Bench at 30\u00b0
         break;
       }
       case "swap": { const i = +t.dataset.d, k = gk(i, t.dataset.ex); if (!ALT[t.dataset.ex]) break; GYM.swap[k] = !GYM.swap[k]; saveGym(); refreshLift(i, t.dataset.ex); toast(GYM.swap[k] ? "Swapped to " + ALT[t.dataset.ex].name : "Back to the original", GYM.swap[k] ? "Same sets, reps and rest" : ""); break; }
+      case "rtick": { const i = +t.dataset.d, k = t.dataset.k; setTick(i, k, !rTick(i, k)); renderSession(i, true); renderHub(); if (DAYS[i].race && raceProg(i).done >= raceProg(i).total) toast("Day done", dayKind(DAYS[i])); break; }
       case "greset": { const i = +t.dataset.d; (DAYS[i].lifts || []).forEach(e => { delete GYM.done[gk(i, e.id)]; delete GYM.swap[gk(i, e.id)]; }); saveGym(); if (PG && PG.i === i) PG.pages.forEach((p, k) => refreshPage(k)); renderSession(i, true); toast("Reset"); break; }
       case "shareweek": shareWeek(); break;
       case "share": shareDay(+(t.dataset.d != null ? t.dataset.d : curDay)); break;
