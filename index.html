@@ -258,6 +258,7 @@ body:not(.has-coach) .tile.coach,body:not(.has-coach) .ibtn.coach{display:none}
 .cell .dot{margin:0}
 .cell.sel{background:var(--g3);box-shadow:0 0 0 1px var(--line)}
 .cell.done .dot{background:var(--good)}
+.wh .whr{display:flex;gap:14px;align-items:center}
 .card.kv{display:grid;grid-template-columns:auto 1fr;gap:10px 16px;font:400 15px/1.5 var(--ui);align-items:start}
 .card.kv b{font:600 11.5px/1.5 var(--ui);letter-spacing:.14em;text-transform:uppercase;color:var(--fg3);padding-top:3px}
 .card.kv span{min-width:0}
@@ -504,7 +505,7 @@ body:not(.has-coach) .tile.coach,body:not(.has-coach) .ibtn.coach{display:none}
   <div class="pb" id="hubBody">
     <div class="today" id="hero"></div>
     <div class="week">
-      <div class="wh"><span class="eb">This week</span><button type="button" class="lnk" data-act="shareweek">Share week</button></div>
+      <div class="wh"><span class="eb" id="weekLbl">This week</span><span class="whr"><button type="button" class="lnk" data-act="week" id="weekTog" hidden>Next week</button><button type="button" class="lnk" data-act="shareweek">Share week</button></span></div>
       <div class="cells" id="deck" role="list" aria-label="This week"></div>
       <div class="sum" id="weekSum"></div>
     </div>
@@ -1260,23 +1261,27 @@ const RACE = (function () {
   const NOW = new Date(), TODAY = NOW.getDay();
   const SUN = new Date(NOW.getFullYear(), NOW.getMonth(), NOW.getDate() - TODAY);
   const dateOf = i => new Date(SUN.getFullYear(), SUN.getMonth(), SUN.getDate() + i);
-  const dShort = i => { const d = dateOf(i); return SHORT[i] + " " + d.getDate() + " " + MON[d.getMonth()]; };
+  const dShort = i => { const d = dateOf(i); return SHORT[i % 7] + " " + d.getDate() + " " + MON[d.getMonth()]; };
   const dDate = i => { const d = dateOf(i); return d.getDate() + " " + MON[d.getMonth()]; };
   const fmtClock = s => { s = Math.max(0, Math.round(s)); return Math.floor(s / 60) + ":" + pad(s % 60); };
   const fmtRest = s => s < 120 ? s + " s" : (s % 60 ? Math.floor(s / 60) + ":" + pad(s % 60) : s / 60 + " min");
   const fmtMin = m => m >= 60 ? Math.floor(m / 60) + " h" + (Math.round(m % 60) ? " " + pad(Math.round(m % 60)) : "") : Math.round(m) + " min";
   const fmtPace = s => Math.floor(s / 60) + ":" + pad(Math.round(s % 60));
-  const relDay = i => i === TODAY ? "Today" : i === (TODAY + 1) % 7 ? "Tomorrow" : i === (TODAY + 6) % 7 ? "Yesterday" : FULL[i];
+  const relDay = i => i === TODAY ? "Today" : i === TODAY + 1 ? "Tomorrow" : i === TODAY - 1 ? "Yesterday" : FULL[i % 7];
   const iso = d => d.getFullYear() + "-" + pad(d.getMonth() + 1) + "-" + pad(d.getDate());
   /* race week: dated days replace this week's normal days, then the normal week comes back by itself */
   const RACEON = typeof RACE !== "undefined";
+  const BASE = DAYS.slice();
   if (RACEON) DAYS.forEach((d, i) => { const r = RACE.days[iso(dateOf(i))]; if (r) DAYS[i] = r; });
+  const ALL = DAYS.concat(BASE.map((d, k) => (RACEON && RACE.days[iso(dateOf(k + 7))]) || d));
+  const D = i => ALL[i];
+  let weekOff = 0;
   const raceIn = () => RACEON ? Math.round((new Date(RACE.date + "T00:00:00") - new Date(NOW.getFullYear(), NOW.getMonth(), NOW.getDate())) / 864e5) : null;
   const RK = "hw3:race"; let RD = S.get(RK, null) || {};
   const rdOf = i => RD[iso(dateOf(i))] || {};
   const rTick = (i, k) => !!rdOf(i)[k];
   function setTick(i, k, v) { const key = iso(dateOf(i)); RD[key] = RD[key] || {}; if (v) RD[key][k] = 1; else delete RD[key][k]; S.set(RK, RD); }
-  function raceProg(i) { const td = DAYS[i].race.todo; return { done: td.filter(x => rTick(i, x.k)).length, total: td.length }; }
+  function raceProg(i) { const td = D(i).race.todo; return { done: td.filter(x => rTick(i, x.k)).length, total: td.length }; }
   const rxTxt = e => e.sets + " × " + (e.rxs || e.reps);
   const SEP = " · ";
 
@@ -1376,16 +1381,16 @@ const RACE = (function () {
   const saveGym = () => { try { sessionStorage.setItem(GK, JSON.stringify(GYM)); } catch (e) {} };
   const gk = (i, id) => i + ":" + id;
   const doneOf = (i, e) => Math.min(e.sets, GYM.done[gk(i, e.id)] || 0);
-  function gymDone(i) { let n = 0; (DAYS[i].lifts || []).forEach(e => { n += doneOf(i, e); }); return n; }
-  function nextTraining(i) { for (let s = 1; s <= 7; s++) { const j = (i + s) % 7; if (!DAYS[j].rest) return j; } return i; }
+  function gymDone(i) { let n = 0; (D(i).lifts || []).forEach(e => { n += doneOf(i, e); }); return n; }
+  function nextTraining(i) { for (let s = 1; s <= 7; s++) { const j = i + s < ALL.length ? i + s : i + s - 7; if (!D(j).rest) return j; } return i; }
   const blkDone = (i, bi) => !!GYM.blk[i + ":" + bi];
   function flagBlock(i, bi) {
     GYM.blk[i + ":" + bi] = 1; saveGym();
-    const d = DAYS[i];
+    const d = D(i);
     if (d.race) { const b = d.blocks[bi], key = b.after ? "rec" : "pre"; if (d.blocks.every((x, k) => !!x.after !== !!b.after || blkDone(i, k)) && d.race.todo.some(x => x.k === key)) setTick(i, key, true); }
     if (sessionEl.classList.contains("on") && curDay === i) renderSession(i, true);
   }
-  const runDone = i => !!(RT && RT.day === i && RT.n >= DAYS[i].run.phases.length);
+  const runDone = i => !!(RT && RT.day === i && RT.n >= D(i).run.phases.length);
 
   /* ============ pages ============ */
   const hub = $("#hub"), sessionEl = $("#session"), detailEl = $("#detail"), rwEl = $("#raceweek"), rwBody = $("#rwbody"), deck = $("#deck"), heroEl = $("#hero"), sbody = $("#sbody"), sbar = $("#sbar"), shLbl = $("#shLbl"), dtrack = $("#dtrack"), dhLbl = $("#dhLbl"), dhR = $("#dhR"), dseg = $("#dseg");
@@ -1399,7 +1404,7 @@ const RACE = (function () {
 
   /* ---- Home ---- */
   function renderHero() {
-    const i = heroDay, d = DAYS[i], rs = d.run ? runStats(d.run) : null;
+    const i = heroDay, d = D(i), rs = d.run ? runStats(d.run) : null;
     const stats = [];
     if (d.race) {
       const r = d.race;
@@ -1418,32 +1423,35 @@ const RACE = (function () {
     }
     setCat(heroEl, d.cat);
     heroEl.innerHTML =
-      '<span class="eb tint"><i class="dot"></i>' + (i === TODAY ? "Today" : FULL[i]) + SEP + dayKind(d) + '</span>' +
+      '<span class="eb tint"><i class="dot"></i>' + (i === TODAY ? "Today" : FULL[(i) % 7]) + SEP + dayKind(d) + '</span>' +
       '<h1 class="dxl">' + esc(d.lines[0]) + '</h1><div class="dsub">' + esc(d.lines[1] || "") + '</div>' +
       '<div class="stats">' + stats.slice(0, 4).map(x => '<div><b>' + x[0] + '</b><span>' + x[1] + '</span></div>').join("") + '</div>' +
       '<p class="prev">' + dayItems(d).map(esc).join(SEP) + '</p>' +
-      '<div class="cta"><button type="button" class="btn" data-act="open" data-d="' + i + '">' + (i === TODAY ? "Begin today's session" : "Open " + FULL[i]) + '</button>' +
+      '<div class="cta"><button type="button" class="btn" data-act="open" data-d="' + i + '">' + (i === TODAY ? "Begin today's session" : "Open " + FULL[(i) % 7]) + '</button>' +
       '<button type="button" class="btn ghost sq" data-act="share" data-d="' + i + '" aria-label="Share this session as an image">' + I.share + '</button></div>';
-    $$(".cell", deck).forEach((c, k) => { c.classList.toggle("sel", k === i); c.setAttribute("aria-pressed", k === i); });
+    $$(".cell", deck).forEach((c, k) => { c.classList.toggle("sel", weekOff + k === i); c.setAttribute("aria-pressed", weekOff + k === i); });
     $("#weekSum").innerHTML = esc(i === TODAY ? weekSummary() : (d.race ? raceLine(i) : daySummary(d))) + (i !== TODAY ? SEP + '<button type="button" class="lnk inl" data-act="today">Back to today</button>' : "") + (DAYS.some(x => x.race) ? SEP + '<button type="button" class="lnk inl" data-act="raceweek">Whole race week</button>' : "");
-    $("#hubNext").innerHTML = '<div class="eb">' + (i === TODAY ? "Up next" : "After " + FULL[i]) + '</div>' + upNext(i);
+    $("#hubNext").innerHTML = '<div class="eb">' + (i === TODAY ? "Up next" : "After " + FULL[(i) % 7]) + '</div>' + upNext(i);
   }
   function renderHub() {
-    $("#hubDate").textContent = FULL[TODAY] + SEP + dDate(TODAY);
+    $("#hubDate").textContent = FULL[(TODAY) % 7] + SEP + dDate(TODAY);
     $("#hubTitle").textContent = pref.name; $("#hubTitle").classList.toggle("long", pref.name.length > 12); document.title = pref.name;
-    deck.innerHTML = DAYS.map((d, i) => {
-      const dt = dateOf(i);
+    $("#weekLbl").textContent = weekOff ? "Next week" : "This week";
+    $("#weekTog").textContent = weekOff ? "This week" : "Next week";
+    $("#weekTog").hidden = !RACEON;
+    deck.innerHTML = DAYS.map((x, k) => {
+      const i = weekOff + k, d = D(i), dt = dateOf(i);
       const pr = d.race ? raceProg(i) : null;
-      return '<button type="button" class="cell' + (i === TODAY ? " today" : "") + (pr && pr.done >= pr.total ? " done" : "") + '" data-cat="' + d.cat + '" data-act="day" data-d="' + i + '" role="listitem" aria-label="' + FULL[i] + ' ' + dt.getDate() + ', ' + esc(d.lines.join(" ")) + '">' +
-        '<span class="wd">' + TINY[i] + '</span><span class="nm">' + dt.getDate() + '</span><i class="dot"></i></button>';
+      return '<button type="button" class="cell' + (i === TODAY ? " today" : "") + (pr && pr.done >= pr.total ? " done" : "") + '" data-cat="' + d.cat + '" data-act="day" data-d="' + i + '" role="listitem" aria-label="' + FULL[(i) % 7] + ' ' + dt.getDate() + ', ' + esc(d.lines.join(" ")) + '">' +
+        '<span class="wd">' + TINY[(i) % 7] + '</span><span class="nm">' + dt.getDate() + '</span><i class="dot"></i></button>';
     }).join("");
     renderHero();
   }
   function goHub() { show(hub, "pop"); heroDay = curDay; renderHero(); }
 
   /* ---- Session ---- */
-  function liftIdx(i, e) { const d = DAYS[i]; return (d.warmup ? 1 : 0) + d.lifts.indexOf(e); }
-  function finishIdx(i) { const d = DAYS[i]; return (d.warmup ? 1 : 0) + (d.lifts || []).length; }
+  function liftIdx(i, e) { const d = D(i); return (d.warmup ? 1 : 0) + d.lifts.indexOf(e); }
+  function finishIdx(i) { const d = D(i); return (d.warmup ? 1 : 0) + (d.lifts || []).length; }
   function ringSm(done, total) {
     const C = 2 * Math.PI * 10, full = done >= total;
     return '<svg class="ring' + (full ? " full" : "") + '" viewBox="0 0 24 24" aria-hidden="true" style="transform:rotate(-90deg)"><circle class="trk" cx="12" cy="12" r="10"/><circle class="prg" cx="12" cy="12" r="10" stroke-dasharray="' + C.toFixed(2) + '" stroke-dashoffset="' + (C * (1 - done / total)).toFixed(2) + '" stroke-linecap="round"/></svg>';
@@ -1459,15 +1467,16 @@ const RACE = (function () {
     return act ? '<button type="button" class="sechd" ' + act + '>' + inner + I.chev + '</button>' : '<div class="sechd">' + inner + (right || "") + '</div>';
   }
   function upNext(i) {
-    const ni = nextTraining(i), nd = DAYS[ni];
-    return '<button type="button" class="upnext" data-act="open" data-d="' + ni + '" data-cat="' + nd.cat + '"><span class="d">' + SHORT[ni] + '</span><span class="tx"><b>' + esc(nd.lines.join(SEP)) + '</b><span>' + esc(daySummary(nd)) + '</span></span>' + I.chev + '</button>';
+    if (D(i).race && D(i).race.race) return '<div class="upnext" data-cat="rest"><span class="d">Sun</span><span class="tx"><b>Rest' + SEP + 'Mon too</b><span>No running Sunday and Monday. 3 km easy on Tuesday, then the normal week.</span></span></div>';
+    const ni = nextTraining(i), nd = D(ni);
+    return '<button type="button" class="upnext" data-act="open" data-d="' + ni + '" data-cat="' + nd.cat + '"><span class="d">' + SHORT[(ni) % 7] + '</span><span class="tx"><b>' + esc(nd.lines.join(SEP)) + '</b><span>' + esc(daySummary(nd)) + '</span></span>' + I.chev + '</button>';
   }
   function raceLine(i) {
-    const d = DAYS[i], pr = raceProg(i), n = raceIn() - (i - TODAY);
+    const d = D(i), pr = raceProg(i), n = raceIn() - (i - TODAY);
     return (d.race.race ? "Race day" : n === 1 ? "Race tomorrow" : "Race in " + n + " days") + SEP + pr.done + " of " + pr.total + " ticked" + SEP + (d.race.race ? "breakfast 2 h before" : d.race.food.toLowerCase());
   }
   function weekSummary() {
-    if (DAYS[TODAY].race) return raceLine(TODAY);
+    if (D(TODAY).race) return raceLine(TODAY);
     const nl = DAYS.filter(d => d.lifts).length, nr = DAYS.filter(d => d.run).length, m = DAYS.reduce((a, d) => a + (d.rest ? 0 : dayMins(d)), 0);
     return nl + " lift days" + SEP + nr + " runs" + SEP + "≈ " + fmtMin(m) + " this week";
   }
@@ -1478,8 +1487,8 @@ const RACE = (function () {
     return '<button type="button" class="btn" data-act="ropen" data-d="' + i + '" data-live="1">' + (RT.running ? "Resume run" + SEP + rtView(i).txt : "Resume run" + SEP + "paused") + '</button>';
   }
   function sessionTitle(i) {
-    const d = DAYS[i];
-    return '<div class="ttl"><span class="eb tint"><i class="dot"></i>' + (i === TODAY ? "Today" : FULL[i]) + SEP + dayKind(d) + '</span>' +
+    const d = D(i);
+    return '<div class="ttl"><span class="eb tint"><i class="dot"></i>' + (i === TODAY ? "Today" : FULL[(i) % 7]) + SEP + dayKind(d) + '</span>' +
       '<h1 class="dxl">' + esc(d.lines[0]) + '</h1><div class="dsub">' + esc(d.lines[1] || "") + '</div>' + (d.sub ? '<p class="sub">' + esc(d.sub) + '</p>' : "") + '</div>';
   }
   function blockSections(i, d, off, which) {
@@ -1489,7 +1498,7 @@ const RACE = (function () {
       ).join("");
   }
   function renderSession(i, keepScroll) {
-    const d = DAYS[i], top = sbody.scrollTop;
+    const d = D(i), top = sbody.scrollTop;
     setCat(sessionEl, d.cat);
     shLbl.innerHTML = esc(d.lines[0]) + '<small>≈ ' + fmtMin(dayMins(d)) + '</small>';
     $("#shShare").dataset.d = i;
@@ -1566,15 +1575,15 @@ const RACE = (function () {
   /* race week: the whole plan on one page, built from RACE */
   function renderRaceWeek() {
     const O = RACE.overview, keys = Object.keys(RACE.days).filter(k => k >= RACE.from).sort(), WD = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
-    const inWeek = {}; DAYS.forEach((d, i) => { if (d.race) inWeek[iso(dateOf(i))] = i; });
+    const inWeek = {}; ALL.forEach((d, i) => { if (d.race) inWeek[iso(dateOf(i))] = i; });
     const n = raceIn(), doneDays = keys.filter(k => inWeek[k] != null && raceProg(inWeek[k]).done >= raceProg(inWeek[k]).total).length;
     let html = '<div class="prog"><div class="pbar"><span style="width:' + Math.round(doneDays / keys.length * 100) + '%"></span></div><div class="cap">' + (n > 1 ? "Race in " + n + " days" : n === 1 ? "Race tomorrow" : n === 0 ? "Race day" : "Race done") + SEP + doneDays + ' of ' + keys.length + ' days done</div><div class="rule"><i class="dot"></i><span>' + esc(O.rule) + '</span></div></div>' +
       '<p class="how" style="margin:0 0 var(--gap);color:var(--fg2)">' + esc(O.lede) + '</p>';
     keys.forEach((k, x) => {
       const d = RACE.days[k], r = d.race, dt = new Date(k + "T00:00:00"), i = inWeek[k], pr = i != null ? raceProg(i) : null;
       const parts = d.blocks.filter(b => !b.after).map(b => b.title + " " + b.mins + " min").concat(d.run ? [runStats(d.run).km + " km run"] : []).concat(d.blocks.filter(b => b.after).map(b => b.title + " " + b.mins + " min"));
-      const open = i != null ? 'data-act="open" data-d="' + i + '"' : null;
-      html += '<div data-cat="' + d.cat + '">' + secHd(x + 1, WD[dt.getDay()] + " " + dt.getDate() + (i === TODAY ? SEP + "today" : ""), r.tag, open) +
+      const open = i != null ? 'data-act="open" data-d="' + i + '"' : null; const dayRef = i === TODAY ? "today" : i === TODAY + 1 ? "tomorrow" : "";
+      html += '<div data-cat="' + d.cat + '">' + secHd(x + 1, WD[dt.getDay()] + " " + dt.getDate() + (dayRef ? SEP + dayRef : ""), r.tag, open) +
         '<div class="card list">' + (open ? '<button type="button" class="row nothumb" ' + open + '>' : '<div class="row nothumb">') + '<span class="tx"><b>' + esc(d.short) + '</b><span>' + esc(parts.join(SEP)) + '</span></span><span class="rt">' + (pr ? ringSm(pr.done, pr.total) : "") + (open ? I.chev : "") + '</span>' + (open ? '</button>' : '</div>') +
         '<div class="sub-rows"><p class="how" style="margin:0">' + esc(d.sub) + '</p></div></div>' +
         '<div class="card kv" style="margin-top:8px"><b>Recovery</b><span>' + esc(r.recovery) + '</span><b>Food</b><span>' + esc(r.food) + SEP + esc(r.water) + '</span><b>In bed</b><span>' + esc(r.bed) + '</span></div></div>';
@@ -1585,7 +1594,7 @@ const RACE = (function () {
       '<div class="card kv" style="margin-top:8px">' + O.race.map(x => '<b>' + esc(x[0]) + '</b><span>' + esc(x[1]) + '</span>').join("") + '</div>';
     html += secHd(m + 3, "Every day", "", null) + '<div class="card kv">' + O.rules.map(x => '<b>' + esc(x[0]) + '</b><span>' + esc(x[1]) + '</span>').join("") + '</div><p class="muted" style="font-size:13px;margin:10px 2px 0">' + esc(O.caveat) + '</p>';
     rwBody.innerHTML = '<div class="wrap">' + html + '</div>';
-    $("#rwbar").innerHTML = '<div class="pr">' + (DAYS[TODAY].race ? '<button type="button" class="btn" data-act="open" data-d="' + TODAY + '">Begin today\'s session</button>' : '<button type="button" class="btn ghost" data-act="rwback">Back home</button>') + '</div>';
+    $("#rwbar").innerHTML = '<div class="pr">' + (D(TODAY).race ? '<button type="button" class="btn" data-act="open" data-d="' + TODAY + '">Begin today\'s session</button>' : '<button type="button" class="btn ghost" data-act="rwback">Back home</button>') + '</div>';
   }
   function openRaceWeek() { renderRaceWeek(); show(rwEl, "push"); rwBody.scrollTop = 0; }
 
@@ -1614,7 +1623,7 @@ const RACE = (function () {
 
   /* ---- Detail pager ---- */
   function pagesFor(i, scope, bi) {
-    const d = DAYS[i];
+    const d = D(i);
     if (scope === "block") return d.blocks[bi].items.map((it, n) => ({ t: "item", b: d.blocks[bi], bi, n, it }));
     if (scope === "run") return [{ t: "run" }];
     const s = [];
@@ -1634,7 +1643,7 @@ const RACE = (function () {
     return "";
   }
   function pager(i, k, cls) {
-    const n = PG.pages.length, p = PG.pages[k], d = DAYS[i];
+    const n = PG.pages.length, p = PG.pages[k], d = D(i);
     const lbl = p.t === "ex" ? "Lift " + (p.j + 1) + " of " + d.lifts.length : p.t === "warmup" ? "Warm-up" : p.t === "finish" ? "Finish" : (k + 1) + " of " + n;
     return '<div class="pn ' + (cls || "") + '"><button type="button" class="lnk" data-act="slide" data-to="prev"' + (k === 0 ? ' aria-disabled="true"' : "") + '>‹ Previous</button><span class="micro" style="align-self:center">' + lbl + '</span><button type="button" class="lnk" data-act="slide" data-to="next"' + (k === n - 1 ? ' aria-disabled="true"' : "") + '>Next ›</button></div>';
   }
@@ -1645,7 +1654,7 @@ const RACE = (function () {
     return "";
   }
   function pWarm(i) {
-    const d = DAYS[i], w = d.warmup;
+    const d = D(i), w = d.warmup;
     return '<div class="sb"><div class="wrap rv"><span class="eb tint">Before you lift' + SEP + w.mins + ' min</span><h1 class="dl">Warm-up</h1>' +
       '<p class="how">' + esc(w.note) + '</p>' +
       '<div class="card list" style="margin-top:16px;padding:8px 16px">' + w.items.map((it, n) => '<div class="ck"><i>' + (n + 1) + '</i><span>' + esc(it) + '</span></div>').join("") + '</div>' +
@@ -1653,7 +1662,7 @@ const RACE = (function () {
       '<div class="bar"><div class="pr"><button type="button" class="btn" data-act="slide" data-to="next">First lift' + SEP + esc(d.lifts[0].name) + '</button>' + sqLink(w.q, w.vk) + '</div></div>';
   }
   function pEx(i, e, j) {
-    const d = DAYS[i], n = d.lifts.length, k = gk(i, e.id), idx = liftIdx(i, e);
+    const d = D(i), n = d.lifts.length, k = gk(i, e.id), idx = liftIdx(i, e);
     const alt = GYM.swap[k] && ALT[e.id] ? ALT[e.id] : null;
     const name = alt ? alt.name : e.name, how = alt ? alt.how : e.how;
     const done = doneOf(i, e), all = done >= e.sets, last = j === n - 1;
@@ -1679,13 +1688,13 @@ const RACE = (function () {
       '</div></div>';
   }
   function pFinish(i) {
-    const d = DAYS[i], C = 2 * Math.PI * 54;
+    const d = D(i), C = 2 * Math.PI * 54;
     /* truthful ring: sets ticked on a lift day, blocks + run on a run day */
     let done, total, what;
     if (d.lifts) { done = gymDone(i); total = setsOf(d); what = done + " of " + total + " sets"; }
     else { const parts = d.blocks.map((b, bi) => blkDone(i, bi)).concat([runDone(i)]); done = parts.filter(Boolean).length; total = parts.length; what = done + " of " + total + " parts"; }
     const full = total > 0 && done >= total;
-    return '<div class="sb"><div class="wrap rv fin"><span class="eb">' + FULL[i] + SEP + (full ? 'done' : what) + '</span><h1 class="dxl">That\'s the session.</h1>' +
+    return '<div class="sb"><div class="wrap rv fin"><span class="eb">' + FULL[(i) % 7] + SEP + (full ? 'done' : what) + '</span><h1 class="dxl">That\'s the session.</h1>' +
       '<p class="body">' + (d.lifts ? what + '. Cool down, stretch what you trained. ' : 'Rehab, mobility and the run. Ice the knee ten minutes if it feels warm. ') + 'Eat, drink, sleep.</p>' +
       '<div class="ring"><svg viewBox="0 0 120 120" aria-hidden="true"><circle class="trk" cx="60" cy="60" r="54"/><circle class="prg" cx="60" cy="60" r="54" stroke-dasharray="' + C + '" stroke-dashoffset="' + (C * (1 - (total ? done / total : 0))).toFixed(2) + '"/></svg>' + (full ? '<span class="tk">' + I.tick + '</span>' : "") + '</div>' +
       '<div class="acts"><button type="button" class="btn sec" data-act="share" data-d="' + i + '">' + I.share + 'Share today\'s session</button>' +
@@ -1694,7 +1703,7 @@ const RACE = (function () {
       (d.lifts ? '<button type="button" class="lnk sm reset" data-act="greset" data-d="' + i + '">Reset today\'s ticks and swaps</button>' : "") + '</div></div></div>';
   }
   function pItem(i, b, bi, n, k) {
-    const d = DAYS[i], it = b.items[n], last = n === b.items.length - 1, nb = d.blocks[bi + 1];
+    const d = D(i), it = b.items[n], last = n === b.items.length - 1, nb = d.blocks[bi + 1];
     const nextBtn = !last ? '<button type="button" class="btn" data-act="slide" data-to="next">Next' + SEP + esc(b.items[n + 1].name) + '</button>'
       : nb ? '<button type="button" class="btn" data-act="bdone" data-d="' + i + '" data-b="' + bi + '">Next' + SEP + esc(nb.title) + '</button>'
       : '<button type="button" class="btn done" data-act="bdone" data-d="' + i + '" data-b="' + bi + '">Back to the session</button>';
@@ -1705,7 +1714,7 @@ const RACE = (function () {
       '<div class="bar"><div class="pr">' + nextBtn + sqLink(it.q, null) + '</div></div>';
   }
   function pRun(i) {
-    const d = DAYS[i], run = d.run, rs = runStats(run), P = paces(), pk = run.steps[0].pk || "z2";
+    const d = D(i), run = d.run, rs = runStats(run), P = paces(), pk = run.steps[0].pk || "z2";
     return '<div class="sb"><div class="wrap rv"><span class="eb tint" style="margin-top:16px">' + esc(run.kick) + SEP + (d.blocks ? 'after rehab and mobility' : 'run') + '</span><h1 class="dxl">' + esc(run.name) + '</h1>' +
       '<div class="stats"><div><b>' + rs.km + ' km</b><span>distance</span></div><div><b>≈ ' + rs.mins + ' min</b><span>estimate</span></div><div><b>' + (pref.tm ? kmh(P[pk]) : paceOne(P[pk])) + '</b><span>' + (pref.tm ? "km/h" : "min / km") + '</span></div></div>' +
       '<p class="how">' + esc(run.what) + '</p>' +
@@ -1714,7 +1723,7 @@ const RACE = (function () {
       '<p class="note" style="display:block">' + esc(run.tip) + '</p>' + tmRow(P, i) + '</div></div>' +
       '<div class="bar"><div class="pr">' + (liveRunBtn(i) || (runDone(i) ? '<button type="button" class="btn done" data-act="back">Run complete' + SEP + 'back to the session</button>' : '<button type="button" class="btn" data-act="ropen" data-d="' + i + '">Start guided run</button>')) + '<button type="button" class="btn ghost sq" data-act="rg" data-d="' + i + '" aria-label="Phases and videos">' + I.list + '</button></div></div>';
   }
-  function pageCat(i, p) { return p.t === "item" ? p.b.cat : p.t === "run" ? "run" : DAYS[i].cat; }
+  function pageCat(i, p) { return p.t === "item" ? p.b.cat : p.t === "run" ? "run" : D(i).cat; }
   function openPager(i, scope, bi, k) {
     curDay = i; PG = { i, scope, bi, pages: pagesFor(i, scope, bi), k: k || 0 };
     PG.k = Math.max(0, Math.min(PG.pages.length - 1, PG.k));
@@ -1725,7 +1734,7 @@ const RACE = (function () {
   }
   function paintDetailHd() {
     if (!PG) return;
-    const i = PG.i, d = DAYS[i], p = PG.pages[PG.k], n = PG.pages.length;
+    const i = PG.i, d = D(i), p = PG.pages[PG.k], n = PG.pages.length;
     setCat(detailEl, pageCat(i, p));
     let t = "", s = "", r = "";
     if (p.t === "ex") { t = "Lift " + (p.j + 1) + " of " + d.lifts.length; s = p.e.group || d.lines[0]; r = '<button type="button" class="ibtn coach" data-act="coach" data-d="' + i + '" data-ex="' + p.e.id + '" aria-label="Ask the coach">' + I.chat + '</button>'; }
@@ -1812,7 +1821,7 @@ const RACE = (function () {
     opts = opts || {};
     unlockAudio(); primeVoice(); clearTimeout(REST.goT);
     Object.assign(REST, { on: true, end: Date.now() + sec * 1000, dur: sec, min: false, said: {}, adv: opts.adv || null, goSay: opts.goSay || "Go.", blk: opts.blk || null });
-    setCat(restEl, DAYS[curDay].cat); setCat(pill, DAYS[curDay].cat);
+    setCat(restEl, D(curDay).cat); setCat(pill, D(curDay).cat);
     restEl.classList.remove("go"); pill.classList.remove("go", "on");
     /* a block timer is headed by the block name, a set rest by "Rest" (N3) */
     $("#rest .rl").textContent = opts.blk ? label : "Rest";
@@ -1848,12 +1857,12 @@ const RACE = (function () {
   const runov = $("#runov"), rvPrg = $("#rvPrg"), rvTime = $("#rvTime"), rvPhase = $("#rvPhase"), rvRpe = $("#rvRpe"), rvNote = $("#rvNote"), rvMain = $("#rvMain"), rvTl = $("#rvTl"), rvHr = $("#rvHr"), rvTitle = $("#rvTitle");
   rvPrg.setAttribute("stroke-dasharray", CIRC);
   let RT = S.get("hw3:rt", null);
-  if (RT && (typeof RT.day !== "number" || !DAYS[RT.day] || !DAYS[RT.day].run || Date.now() - (RT.at || 0) > 36e5 * 6)) RT = null;
+  if (RT && (typeof RT.day !== "number" || !D(RT.day) || !D(RT.day).run || Date.now() - (RT.at || 0) > 36e5 * 6)) RT = null;
   const saveRT = () => { if (RT) RT.at = Date.now(); S.set("hw3:rt", RT); };
   let rvDay = null, RTsaid = {};
   function rtView(day) {
     if (day == null) day = rvDay;
-    const d = DAYS[day], run = d.run, ph = run.phases;
+    const d = D(day), run = d.run, ph = run.phases;
     const rt = RT && RT.day === day ? RT : null;
     const n = rt ? rt.n : 0, fin = n >= ph.length, p = fin ? null : ph[n], dur = p ? phaseDur(p) : 0;
     let left = dur, frac = 1, txt;
@@ -1950,12 +1959,12 @@ const RACE = (function () {
   }
   function runPause() {
     if (!RT || !RT.running) return;
-    const p = DAYS[RT.day].run.phases[RT.n];
+    const p = D(RT.day).run.phases[RT.n];
     RT.running = false; if (p && phaseDur(p)) RT.left = Math.max(0, (RT.endAt - Date.now()) / 1000);
     saveRT(); say("Paused."); paintRun();
   }
   function advance(manual) {
-    const d = DAYS[RT ? RT.day : rvDay], ph = d.run.phases;
+    const d = D(RT ? RT.day : rvDay), ph = d.run.phases;
     if (!RT) RT = { day: rvDay, n: 0, running: false, endAt: null, left: null, startAt: null };
     RT.n = Math.min(ph.length, RT.n + 1); RTsaid = {};
     if (RT.n >= ph.length) {
@@ -1976,7 +1985,7 @@ const RACE = (function () {
   }
   function tickRun() {
     if (!RT || !RT.running) return;
-    const d = DAYS[RT.day], ph = d.run.phases; let guard = 0;
+    const d = D(RT.day), ph = d.run.phases; let guard = 0;
     while (RT.running && guard++ < 20) {
       if (RT.n >= ph.length) { RT.running = false; break; }
       const dur = phaseDur(ph[RT.n]);
@@ -2013,7 +2022,7 @@ const RACE = (function () {
   const anyOpen = () => [cuesEl, coachEl, platesEl, guideEl, shareEl].some(el => el.classList.contains("open")) || runov.classList.contains("on") || REST.on;
 
   function openRunGuide(i) {
-    const run = DAYS[i].run, P = paces();
+    const run = D(i).run, P = paces();
     $("#cVis").innerHTML = "";
     $("#cKick").innerHTML = "<span>" + esc(run.kick) + "</span><span class='r'>" + runStats(run).km + " km" + SEP + "≈ " + runStats(run).mins + " min</span>";
     $("#cTitle").textContent = run.name; $("#cDesc").textContent = run.desc;
@@ -2022,7 +2031,7 @@ const RACE = (function () {
     openSheet(cuesEl, "run");
   }
   function openCues(i, exId) {
-    const d = DAYS[i], e = d.lifts.find(x => x.id === exId); if (!e) return;
+    const d = D(i), e = d.lifts.find(x => x.id === exId); if (!e) return;
     const alt = GYM.swap[gk(i, e.id)] && ALT[e.id] ? ALT[e.id] : null;
     $("#cVis").innerHTML = "";
     $("#cKick").innerHTML = "<span>" + esc(d.lines[0]) + "</span><span class='r'>" + (alt ? "Swapped in for " + esc(e.name) : esc(e.target)) + "</span>";
@@ -2044,7 +2053,7 @@ const RACE = (function () {
     Promise.resolve(claude.use("sample")).then(f => { sampleFn = f || null; document.body.classList.toggle("has-coach", !!sampleFn); }).catch(() => {});
   }
   function openCoach(i, exId) {
-    const d = DAYS[i], e = exId ? d.lifts.find(x => x.id === exId) : null, run = exId ? null : d.run;
+    const d = D(i), e = exId ? d.lifts.find(x => x.id === exId) : null, run = exId ? null : d.run;
     coachCtx = { d, e, run, i };
     $("#coKick").textContent = e ? d.lines[0] : run.kick;
     $("#coTitle").textContent = e ? e.name : run.name;
@@ -2079,7 +2088,7 @@ const RACE = (function () {
   function openPlates(name) {
     $("#plKick").textContent = name || "";
     $("#plBar").innerHTML = [15, 20, 25].map(b => '<button type="button" class="chip" data-act="plbar" data-v="' + b + '" aria-pressed="' + (PL.bar === b) + '">' + b + ' kg</button>').join("");
-    paintPlates(); openSheet(platesEl, DAYS[curDay].cat);
+    paintPlates(); openSheet(platesEl, D(curDay).cat);
     setTimeout(() => $("#plKg").focus(), 450);
   }
   function paintPlates() {
@@ -2112,11 +2121,11 @@ const RACE = (function () {
   async function loadFonts() { try { await Promise.all([document.fonts.load('500 120px "Fraunces"'), document.fonts.load('italic 400 60px "Fraunces"'), document.fonts.load('600 40px Manrope'), document.fonts.load('400 40px Manrope')]); } catch (e) {} }
   function cardDot(ctx, x, y, col) { ctx.fillStyle = col; ctx.beginPath(); ctx.arc(x, y, 7, 0, 6.283); ctx.fill(); }
   async function makeCard(i) {
-    const d = DAYS[i], T = cardTokens(d.cat); await loadFonts();
+    const d = D(i), T = cardTokens(d.cat); await loadFonts();
     const W = 1080, H = 1920, c = document.createElement("canvas"); c.width = W; c.height = H; const ctx = c.getContext("2d");
     ctx.fillStyle = T.g1; ctx.fillRect(0, 0, W, H);
     ctx.fillStyle = T.fg2; ctx.font = '600 30px ' + SANS; ctx.fillText(pref.name.toUpperCase().split("").join(" "), 80, 140);
-    ctx.textAlign = "right"; ctx.fillText((FULL[i] + SEP + dDate(i)).toUpperCase(), W - 80, 140); ctx.textAlign = "left";
+    ctx.textAlign = "right"; ctx.fillText((FULL[(i) % 7] + SEP + dDate(i)).toUpperCase(), W - 80, 140); ctx.textAlign = "left";
     ctx.fillStyle = T.tint; ctx.font = '600 28px ' + SANS; ctx.fillText(dayKind(d).toUpperCase().split("").join(" "), 80, 330);
     ctx.fillStyle = T.fg; ctx.font = '500 150px ' + SERIF; ctx.fillText(d.lines[0], 74, 480);
     ctx.font = 'italic 400 64px ' + SERIF; ctx.fillStyle = T.fg2; let y = wrapText(ctx, d.lines[1] || "", 80, 570, W - 160, 76);
@@ -2153,9 +2162,9 @@ const RACE = (function () {
     ctx.fillStyle = T.accent; ctx.fillRect(80, 410, W - 160, 2);
     const order = [0, 1, 2, 3, 4, 5, 6], top = 480, rowH = 170;
     order.forEach((i, r) => {
-      const d = DAYS[i], y = top + r * rowH, tint = cardTokens(d.cat).tint;
+      const d = D(i), y = top + r * rowH, tint = cardTokens(d.cat).tint;
       cardDot(ctx, 92, y + 48, tint);
-      ctx.fillStyle = T.fg; ctx.font = '500 56px ' + SERIF; ctx.fillText(SHORT[i], 124, y + 66);
+      ctx.fillStyle = T.fg; ctx.font = '500 56px ' + SERIF; ctx.fillText(SHORT[(i) % 7], 124, y + 66);
       ctx.fillStyle = T.fg; ctx.font = '600 36px ' + SANS; ctx.fillText(d.lines[0], 330, y + 56);
       ctx.fillStyle = T.fg2; ctx.font = '400 32px ' + SANS; ctx.fillText(d.lines[1] || "", 330, y + 104);
       ctx.textAlign = "right"; ctx.fillStyle = T.fg2; ctx.font = '600 32px ' + SANS;
@@ -2186,7 +2195,7 @@ const RACE = (function () {
   async function shareDay(i) {
     toast("Making your card…");
     let blob; try { blob = await makeCard(i); } catch (e) { toast("Couldn't make the card"); return; }
-    await shareBlob(blob, "hadeed-" + SHORT[i].toLowerCase() + ".png", FULL[i] + "'s session", pref.name, DAYS[i].cat);
+    await shareBlob(blob, "hadeed-" + SHORT[(i) % 7].toLowerCase() + ".png", FULL[(i) % 7] + "'s session", pref.name, D(i).cat);
   }
 
   /* ============ guide settings ============ */
@@ -2232,13 +2241,14 @@ const RACE = (function () {
       case "day": { const i = +t.dataset.d; if (i === heroDay) { openSession(i); closeAll(); } else { heroDay = i; renderHero(); } break; }
       case "open": openSession(+t.dataset.d); closeAll(); break;
       case "rwback": goHub(); break;
-      case "today": heroDay = TODAY; renderHero(); break;
+      case "today": heroDay = TODAY; if (weekOff) { weekOff = 0; renderHub(); } else renderHero(); break;
+      case "week": weekOff = weekOff ? 0 : 7; heroDay = weekOff ? 7 : TODAY; renderHub(); break;
       case "hub": goHub(); break;
       case "back": closePager(); break;
       case "slide": goSlide(t.dataset.to); break;
       case "item": openPager(+t.dataset.d, "block", +t.dataset.b, +t.dataset.n); break;
       case "run": openPager(+t.dataset.d, "run", null, 0); break;
-      case "bdone": { const i = +t.dataset.d, bi = +t.dataset.b; flagBlock(i, bi); if (DAYS[i].blocks[bi + 1]) openPager(i, "block", bi + 1, 0); else openSession(i, bi + ":" + (DAYS[i].blocks[bi].items.length - 1)); break; }
+      case "bdone": { const i = +t.dataset.d, bi = +t.dataset.b; flagBlock(i, bi); if (D(i).blocks[bi + 1]) openPager(i, "block", bi + 1, 0); else openSession(i, bi + ":" + (D(i).blocks[bi].items.length - 1)); break; }
       case "wtog": { const on = t.getAttribute("aria-expanded") !== "true"; t.setAttribute("aria-expanded", on); const sub = t.nextElementSibling; if (sub) sub.hidden = !on; break; }
       case "vtog": t.classList.toggle("showb"); break;
       case "guide": paintGuide(); openSheet(guideEl); break;
@@ -2246,7 +2256,7 @@ const RACE = (function () {
       case "voice": pref.voice = !pref.voice; paintGuide(); if (pref.voice) { primeVoice(); say("Voice coach on."); } break;
       case "tm": pref.tm = !pref.tm; paintGuide(); refreshRuns(); break;
       case "gset": {
-        const i = +t.dataset.d, d = DAYS[i], j = d.lifts.findIndex(x => x.id === t.dataset.ex), e = d.lifts[j], k = gk(i, e.id), kk = liftIdx(i, e);
+        const i = +t.dataset.d, d = D(i), j = d.lifts.findIndex(x => x.id === t.dataset.ex), e = d.lifts[j], k = gk(i, e.id), kk = liftIdx(i, e);
         let n = doneOf(i, e);
         if (n >= e.sets) { goSlide("next"); break; }
         n++; GYM.done[k] = n; saveGym(); refreshLift(i, e.id); buzz(10);
@@ -2257,15 +2267,15 @@ const RACE = (function () {
       }
       case "swap": { const i = +t.dataset.d, k = gk(i, t.dataset.ex); if (!ALT[t.dataset.ex]) break; GYM.swap[k] = !GYM.swap[k]; saveGym(); refreshLift(i, t.dataset.ex); toast(GYM.swap[k] ? "Swapped to " + ALT[t.dataset.ex].name : "Back to the original", GYM.swap[k] ? "Same sets, reps and rest" : ""); break; }
       case "raceweek": openRaceWeek(); break;
-      case "rtick": { const i = +t.dataset.d, k = t.dataset.k; setTick(i, k, !rTick(i, k)); renderSession(i, true); renderHub(); if (DAYS[i].race && raceProg(i).done >= raceProg(i).total) toast("Day done", dayKind(DAYS[i])); break; }
-      case "greset": { const i = +t.dataset.d; (DAYS[i].lifts || []).forEach(e => { delete GYM.done[gk(i, e.id)]; delete GYM.swap[gk(i, e.id)]; }); saveGym(); if (PG && PG.i === i) PG.pages.forEach((p, k) => refreshPage(k)); renderSession(i, true); toast("Reset"); break; }
+      case "rtick": { const i = +t.dataset.d, k = t.dataset.k; setTick(i, k, !rTick(i, k)); renderSession(i, true); renderHub(); if (D(i).race && raceProg(i).done >= raceProg(i).total) toast("Day done", dayKind(D(i))); break; }
+      case "greset": { const i = +t.dataset.d; (D(i).lifts || []).forEach(e => { delete GYM.done[gk(i, e.id)]; delete GYM.swap[gk(i, e.id)]; }); saveGym(); if (PG && PG.i === i) PG.pages.forEach((p, k) => refreshPage(k)); renderSession(i, true); toast("Reset"); break; }
       case "shareweek": shareWeek(); break;
       case "share": shareDay(+(t.dataset.d != null ? t.dataset.d : curDay)); break;
       case "light": { const on = document.documentElement.dataset.theme !== "light"; if (on) document.documentElement.dataset.theme = "light"; else delete document.documentElement.dataset.theme; S.set("hw3:light", on); paintGuide(); break; }
       case "rest": startRest(+t.dataset.s, t.dataset.n, { blk: t.dataset.blk || null }); break;
       case "r-": REST.end -= 15000; REST.dur = Math.max(1, REST.dur - 15); tickRest(); break;
       case "r+": REST.end += 15000; REST.dur += 15; tickRest(); break;
-      case "rskip": { const blk = REST.on && REST.blk; hideRest(); if (blk) { const [bi, bb] = blk.split(":").map(Number); flagBlock(bi, bb); toast(DAYS[bi].blocks[bb].title + " done"); } break; }
+      case "rskip": { const blk = REST.on && REST.blk; hideRest(); if (blk) { const [bi, bb] = blk.split(":").map(Number); flagBlock(bi, bb); toast(D(bi).blocks[bb].title + " done"); } break; }
       case "rmin": REST.min = true; restEl.classList.remove("on"); pill.classList.add("on"); placePill(); break;
       case "rexpand": if (REST.on) { REST.min = false; pill.classList.remove("on"); restEl.classList.add("on"); } else if (runPill && RT) openRun(RT.day); break;
       case "ropen": openRun(+t.dataset.d); break;
@@ -2288,14 +2298,14 @@ const RACE = (function () {
   document.addEventListener("keydown", ev => {
     if (ev.key === "Escape") { if (REST.on) hideRest(); else if (runov.classList.contains("on")) closeRun(); else if ([cuesEl, coachEl, platesEl, guideEl, shareEl].some(el => el.classList.contains("open"))) closeAll(); else if (detailEl.classList.contains("on")) closePager(); else if (sessionEl.classList.contains("on")) goHub(); return; }
     if (anyOpen() || /INPUT|TEXTAREA/.test((document.activeElement || {}).tagName || "")) return;
-    if (hub.classList.contains("on")) { if (ev.key === "ArrowLeft") { heroDay = (heroDay + 6) % 7; renderHero(); } if (ev.key === "ArrowRight") { heroDay = (heroDay + 1) % 7; renderHero(); } if (ev.key === "Enter") openSession(heroDay); return; }
+    if (hub.classList.contains("on")) { if (ev.key === "ArrowLeft") { heroDay = weekOff + (heroDay - weekOff + 6) % 7; renderHero(); } if (ev.key === "ArrowRight") { heroDay = weekOff + (heroDay - weekOff + 1) % 7; renderHero(); } if (ev.key === "Enter") openSession(heroDay); return; }
     if (detailEl.classList.contains("on")) { if (ev.key === "ArrowRight") { ev.preventDefault(); goSlide("next"); } if (ev.key === "ArrowLeft") { ev.preventDefault(); goSlide("prev"); } }
   });
   let rsz; window.addEventListener("resize", () => { clearTimeout(rsz); rsz = setTimeout(() => { if (PG && detailEl.classList.contains("on")) dtrack.scrollTo({ left: PG.k * dtrack.clientWidth, behavior: "auto" }); }, 120); });
 
   /* ============ boot ============ */
   renderHub(); paintGuide();
-  if (RT && RT.running) { tickRun(); openSession(RT.day); openRun(RT.day); toast("Run still running", DAYS[RT.day].run.name); }
+  if (RT && RT.running) { tickRun(); openSession(RT.day); openRun(RT.day); toast("Run still running", D(RT.day).run.name); }
 })();
 </script>
 
