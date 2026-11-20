@@ -1064,7 +1064,17 @@ const RACE = (function () {
     intro: "Twenty minutes of easy walking keeps the legs loose without adding load. Brisk enough to warm up, easy enough to talk the whole way.",
     items: [{ id: "walk-easy", name: "Easy walk", rx: "20 min", how: "Flat ground, comfortable shoes. Brisk enough to warm up, easy enough to talk. Nothing on the clock.", q: "recovery walk benefits for runners" }] };
   const blocks = () => [Object.assign({}, REHAB), Object.assign({}, MOB), Object.assign({}, AFTER)];
-  const recDay = () => [Object.assign({}, WALK), Object.assign({}, AFTER, { kick: "Ten minutes, any time" })];
+  const recDay = () => [Object.assign({}, WALK, { after: true, kick: "Easy, after the gym or in the evening" }), Object.assign({}, AFTER, { kick: "Ten minutes, after the walk" })];
+  const upper = (re, light) => {
+    const u = DAYS.find(d => d.lifts && re.test(d.lines.join(" ")));
+    const lifts = u.lifts.filter(e => !/leg/i.test(e.group || "")).map(e => light ? Object.assign({}, e, { sets: Math.max(2, e.sets - 1) }) : e);
+    return { lifts, warmup: u.warmup, label: u.lines[1].replace(/,? ?legs [AB]/i, "") };
+  };
+  const gymDay = (tag, re, light, extra) => {
+    const g = upper(re, light);
+    return Object.assign({ cat: "upper", lines: [light ? "Upper light" : "Upper", g.label], kind: ["Race week", tag], short: (light ? "Upper light: " : "Upper: ") + g.label,
+      lifts: g.lifts, warmup: g.warmup, blocks: recDay(), rule: light ? "At 70 %: one set fewer, nothing to failure, no legs. Then the walk and recovery." : "Upper only, no leg exercise of any kind. Then the walk and recovery." }, extra);
+  };
   const stride = (k, n) => ({ n: "Stride " + k + " of " + n, d: 20, rpe: "Fast, relaxed", pk: null, note: "Build for 5 s, fast and relaxed for 10 s at about 85%, ease off for 5 s. Tall, quick feet, loose hands." });
   const walkBack = () => ({ n: "Walk back", d: 50, rpe: "Walk", pk: null, note: "Walk back to where you started. Shake the arms out." });
   const strides = n => { const a = []; for (let k = 1; k <= n; k++) { a.push(stride(k, n)); if (k < n) a.push(walkBack()); } return a; };
@@ -1081,8 +1091,8 @@ const RACE = (function () {
   return {
     name: "Gulf Bank 642 Marathon", dist: "10K", date: "2026-11-28", from: "2026-11-21", start: "06:00", goal: "75–85 min",
     overview: {
-      rule: "Three runs and a shake-out. No leg training; the gym is optional. The deficit stops Thursday.",
-      lede: "For a first 10K the job of this week is to arrive fresh, not fitter: nothing you do now can make Saturday faster, and extra running can only make it slower or hurt. So: one dress rehearsal, then every run gets shorter, and every other day is a walk, ten minutes of mobility and an early night. The upper gym stays optional for the routine; it does not help the race.",
+      rule: "Three runs and a shake-out; upper gym on the other days, no legs. The deficit stops Thursday.",
+      lede: "For a first 10K the job of this week is to arrive fresh, not fitter: nothing you do now can make Saturday faster, and extra running can only make it slower or hurt. So: one dress rehearsal, then every run gets shorter. The other days keep the coach's upper session with every leg exercise out, then a walk, ten minutes of mobility and an early night.",
       pacing: [["8:15–8:30", "Km 1–3, easy", "Slower than feels right. Everyone around you will go out too fast; let them."], ["7:45–8:00", "Km 4–8, steady", "Short sentences. Water at every station, 2–3 sips; walk the station if that is easier."], ["Free", "Km 9–10", "Whatever is there. Tall, quick feet, arms driving. The last 400 m is the only place to be brave."]],
       race: [["Run-walk", "Decided before the start, not during: 9 min run / 1 min walk from km 1, walking briskly, same pace targets while running."], ["Knee", "Shorter, quicker steps, land under the hips, stay off the cambered road edge, no sprint finish if there is any twinge. Sharp pain, locking or a change in how the knee tracks: walk to the next marshal."], ["Kit", "The shoes and socks you trained in, shorts tested on the 7 km, anti-chafe, cap, 2 dates or 1 gel in a pocket, phone in a pocket for the GPS."], ["After", "Walk 10 min, mobility, eat within the hour with 40 g protein in the first meal, ice the knee 10 min in the evening. No running Sunday and Monday; 3 km easy on Tuesday 1 December."]],
       rules: [["Evenings", "Last screen at 20:45, room cool and dark, no caffeine after 14:00, dinner finished two hours before bed."], ["Recovery", "10 min mobility after every session, a walk on the days without a run. Ice the knee 10 min any evening it feels warm."], ["Avoid", "Sauna or steam, new supplements, painkillers before running, large late dinners, anything new after Wednesday."], ["Knee", "Warm or swollen the morning after a run: walk the next run, ice twice a day. Two mornings in a row: no running until Friday's shake-out, and race run-walk 8/2. Sharp pain, catching or locking: stop that session; twice this week and the race is a walk-run or a scratch."], ["Scale", "Up 1–2 kg on Friday is glycogen and water, not fat. Do not cut food to fix it."]],
@@ -1112,13 +1122,11 @@ const RACE = (function () {
         race: { tag: "D-9", food: "Cut", foodS: "Cut", foodNote: "Normal cut; no new fasting experiments this week. Most of today's carbs before and after the run.", water: COMMON.water, bed: COMMON.bed, recovery: REC_RUN,
           todo: [tick("pre", "Rehab + mobility before", "The short 15-minute version"), tick("run", "Light intervals run", "≈ 4.5 km"), recT(), tick("food", "Cut as normal", "Carbs around the run"), waterT("2.5 L"), sleepT("21:30")] } },
 
-      "2026-11-20": { cat: "rest", lines: ["Recovery", "day"], kind: ["Race week", "D-8"], short: "Recovery: walk + mobility",
-        sub: "Twenty minutes of easy walking and ten minutes of mobility. The upper gym is optional and light; no leg exercise of any kind.",
-        line: "No leg training at all from here until after the race. Walking and mobility are the training today.",
-        blocks: recDay(),
-        rec: { rule: "No leg training until after the race. Gym optional, upper only, lighter than usual.", optional: { t: "Upper session, optional", s: "Coach's upper session, lighter; no legs", how: "Only if you want the routine. The C5 upper session at normal weights but one set fewer, nothing to failure. Every leg exercise is out: no squats, no leg press, no curls, no calves." } },
+      "2026-11-20": gymDay("D-8", /shoulders/i, false, {
+        sub: "The coach's upper session with every leg exercise out, then twenty minutes of easy walking and ten minutes of mobility.",
+        line: "No leg training at all from here until after the race. The upper gym keeps your routine and does not touch the race.",
         race: { tag: "D-8", food: "Cut", foodS: "Cut", foodNote: "Normal cut.", water: COMMON.water, bed: COMMON.bed, recovery: REC_DAY,
-          todo: [walkT(), recT(), tick("food", "Cut as normal", ""), waterT("2.5 L"), sleepT("21:30", "Add a 20-minute nap after Dhuhr if you can")] } },
+          todo: [tick("gym", "Upper session, no legs", "Ticks itself when the sets are done"), walkT(), recT(), tick("food", "Cut as normal", ""), waterT("2.5 L"), sleepT("21:30", "Add a 20-minute nap after Dhuhr if you can")] } }),
 
       "2026-11-21": { cat: "run", lines: ["Dress", "rehearsal"], kind: ["Race week", "D-7"], short: "Dress rehearsal 7 km",
         sub: "Short rehab, then 1 km easy, 5 km at race effort, 1 km easy. Your longest run ever.",
@@ -1139,13 +1147,11 @@ const RACE = (function () {
         race: { tag: "D-7", food: "Cut", foodS: "Cut", foodNote: "Normal cut. Carbs before and after the run.", water: COMMON.water, bed: COMMON.bed, recovery: "10 min mobility after the run; ice the knee 10 min tonight, warm or not; feet up in the evening",
           todo: [tick("pre", "Rehab + mobility before", "The short 15-minute version"), tick("run", "Dress rehearsal 7 km", "Note the 5 km pace"), recT(), tick("ice", "Ice the knee 10 min tonight", "Your longest run: ice it whether or not it feels warm"), tick("food", "Cut as normal", "Carbs before and after"), waterT("2.5 L"), sleepT("21:30")] } },
 
-      "2026-11-22": { cat: "rest", lines: ["Recovery", "day"], kind: ["Race week", "D-6"], short: "Recovery: walk + mobility",
-        sub: "Twenty minutes of easy walking, ten minutes of mobility, a nap after Dhuhr if you can. The coach's Day 1 upper session is optional; nothing for the legs.",
-        line: "Six days out. The day after your longest run is for the legs to settle, not to train.",
-        blocks: recDay(),
-        rec: { rule: "No leg training until after the race. Gym optional, upper only, one set fewer.", optional: { t: "Coach's Day 1, upper, optional", s: "One set fewer than usual; no legs", how: "Only if you want the routine. Day 1 as written for the upper body, one set fewer per exercise, nothing to failure. Not even calves." } },
+      "2026-11-22": gymDay("D-6", /chest \+ biceps/i, false, {
+        sub: "Chest and biceps as written, nothing for the legs. Then twenty minutes of easy walking, ten minutes of mobility, and a nap after Dhuhr if you can.",
+        line: "Six days out. The day after your longest run: the upper body trains, the legs settle.",
         race: { tag: "D-6", food: "Cut", foodS: "Cut", foodNote: "Normal cut.", water: COMMON.water, bed: COMMON.bed, recovery: REC_DAY + "; nap after Dhuhr if you can",
-          todo: [walkT(), recT(), tick("food", "Cut as normal", ""), waterT("2.5 L"), sleepT("21:30", "Nap after Dhuhr if you can")] } },
+          todo: [tick("gym", "Chest + biceps, no legs", "Ticks itself when the sets are done"), walkT(), recT(), tick("food", "Cut as normal", ""), waterT("2.5 L"), sleepT("21:30", "Nap after Dhuhr if you can")] } }),
 
       "2026-11-23": { cat: "run", lines: ["Run 1", "easy"], kind: ["Race week", "D-5"], short: "Easy run",
         sub: "Short rehab, then 4 km easy, four strides, a 5-minute walk.",
@@ -1155,13 +1161,11 @@ const RACE = (function () {
         race: { tag: "D-5", food: "Cut", foodS: "Cut", foodNote: "Normal cut. Carbs around the run.", water: COMMON.water, bed: COMMON.bed, recovery: REC_RUN,
           todo: [tick("pre", "Rehab + mobility before", "The short 15-minute version"), tick("run", "Easy 4 km + 4 strides", "Full sentences the whole way"), recT(), tick("food", "Cut as normal", "Carbs around the run"), waterT("2.5 L"), sleepT("21:30")] } },
 
-      "2026-11-24": { cat: "rest", lines: ["Recovery", "day"], kind: ["Race week", "D-4"], short: "Recovery: walk + mobility",
-        sub: "Twenty minutes of easy walking and ten minutes of mobility. The coach's Day 3 upper session is optional and lighter; calves at most, two light sets. Nothing new after tomorrow.",
-        line: "Four days out. The last day anything in the gym counts; from here it only costs.",
-        blocks: recDay(),
-        rec: { rule: "No leg training. Gym optional, upper only, lighter. No deep-tissue massage from today.", optional: { t: "Coach's Day 3, upper, optional", s: "Lighter; calves at most, 2 light sets", how: "Only if you want the routine. Day 3 for the upper body, one set fewer, nothing to failure. Calves at most two light sets. No massage from today; it leaves the legs heavy for two days." } },
+      "2026-11-24": gymDay("D-4", /lats \+ triceps/i, false, {
+        sub: "Lats and triceps as written, nothing for the legs. Then twenty minutes of easy walking and ten minutes of mobility. The last gym day that counts; nothing new after tomorrow.",
+        line: "Four days out. No deep-tissue massage from today; it leaves the legs heavy for two days.",
         race: { tag: "D-4", food: "Cut", foodS: "Cut", foodNote: "Normal cut, last full day of it tomorrow.", water: COMMON.water, bed: COMMON.bed, recovery: REC_DAY,
-          todo: [walkT(), recT(), tick("food", "Cut as normal", ""), waterT("2.5 L"), sleepT("21:30")] } },
+          todo: [tick("gym", "Lats + triceps, no legs", "Ticks itself when the sets are done"), walkT(), recT(), tick("food", "Cut as normal", ""), waterT("2.5 L"), sleepT("21:30")] } }),
 
       "2026-11-25": { cat: "run", lines: ["Pace", "rehearsal"], kind: ["Race week", "D-3"], short: "Pace rehearsal 5 km",
         sub: "Short rehab, then 2 km easy, 2 km at race pace, 1 km easy, three strides. The cut ends tonight.",
@@ -1182,13 +1186,12 @@ const RACE = (function () {
         race: { tag: "D-3", food: "Cut ends tonight", foodS: "Cut ends", foodNote: "Last day of the deficit. From tomorrow, maintenance with the carbs up.", water: "3 L", bed: "21:00", recovery: REC_RUN,
           todo: [tick("pre", "Rehab + mobility before", "The short 15-minute version"), tick("run", "Pace rehearsal 5 km", "2 km at race pace"), recT(), tick("food", "Cut, last day", "Maintenance from tomorrow"), waterT("3 L"), sleepT("21:00", "One of the two nights that matter most")] } },
 
-      "2026-11-26": { cat: "rest", lines: ["Recovery,", "carbs up"], kind: ["Race week", "D-2"], short: "Recovery + carbs up",
-        sub: "Twenty minutes of easy walking, ten minutes of mobility, no gym. Maintenance calories with the carbs up to 400–450 g. In bed by 21:00: the night that matters most.",
-        line: "Two days out. The body banks sleep two nights out, not the night before.",
-        blocks: recDay(),
-        rec: { rule: "No gym today. Walk, mobility, carbs, sleep." },
-        race: { tag: "D-2", food: "Maintenance, carbs up", foodS: "Carbs up", foodNote: "About 2,900–3,100 kcal: 400–450 g carbs (rice, potatoes, bread, oats, fruit, dates, honey), 200 g protein, fat moderate. The scale goes up 1–2 kg from glycogen and water; that is the point.", water: "3–3.5 L + electrolytes", bed: "21:00", recovery: REC_DAY + "; no gym",
-          todo: [walkT(), recT(), tick("food", "Maintenance, 400–450 g carbs", "Rice, potatoes, bread, oats, fruit, dates"), tick("prot", "200 g protein", ""), tick("water", "3–3.5 L water + electrolytes", "A pinch of salt in food or a sachet"), sleepT("21:00", "The most important night of the week")] } },
+      "2026-11-26": gymDay("D-2", /back \+ chest/i, true, {
+        lines: ["Upper light", "carbs up"], short: "Upper light + carbs up",
+        sub: "Back and chest at 70 %: one set fewer per lift, nothing to failure, no legs. Then twenty minutes of easy walking and ten minutes of mobility. Maintenance calories with the carbs up to 400–450 g. In bed by 21:00.",
+        line: "Two days out. If the legs feel heavy or you are short on sleep, skip the lifts; the walk, the carbs and the sleep are what count today.",
+        race: { tag: "D-2", food: "Maintenance, carbs up", foodS: "Carbs up", foodNote: "About 2,900–3,100 kcal: 400–450 g carbs (rice, potatoes, bread, oats, fruit, dates, honey), 200 g protein, fat moderate. The scale goes up 1–2 kg from glycogen and water; that is the point.", water: "3–3.5 L + electrolytes", bed: "21:00", recovery: REC_DAY,
+          todo: [tick("gym", "Upper light, one set fewer", "Skip it if the legs feel heavy"), walkT(), recT(), tick("food", "Maintenance, 400–450 g carbs", "Rice, potatoes, bread, oats, fruit, dates"), tick("prot", "200 g protein", ""), tick("water", "3–3.5 L water + electrolytes", "A pinch of salt in food or a sachet"), sleepT("21:00", "The most important night of the week")] } }),
 
       "2026-11-27": { cat: "run", lines: ["Shake-out", "carbs"], kind: ["Race week", "D-1"], short: "Shake-out",
         sub: "Morning: 2 km easy jog and three strides, or a 20-minute walk if the legs feel heavy. Ten minutes of mobility. Kit laid out, bib pinned, Garmin charged.",
@@ -1279,7 +1282,7 @@ const RACE = (function () {
   const raceIn = () => RACEON ? Math.round((new Date(RACE.date + "T00:00:00") - new Date(NOW.getFullYear(), NOW.getMonth(), NOW.getDate())) / 864e5) : null;
   const RK = "hw3:race"; let RD = S.get(RK, null) || {};
   const rdOf = i => RD[iso(dateOf(i))] || {};
-  const rTick = (i, k) => !!rdOf(i)[k];
+  const rTick = (i, k) => !!rdOf(i)[k] || (k === "gym" && !!D(i).lifts && gymDone(i) >= setsOf(D(i)));
   function setTick(i, k, v) { const key = iso(dateOf(i)); RD[key] = RD[key] || {}; if (v) RD[key][k] = 1; else delete RD[key][k]; S.set(RK, RD); }
   function raceProg(i) { const td = D(i).race.todo; return { done: td.filter(x => rTick(i, x.k)).length, total: td.length }; }
   const rxTxt = e => e.sets + " × " + (e.rxs || e.reps);
@@ -1411,8 +1414,9 @@ const RACE = (function () {
       if (r.race) stats.push([rs.km + " km", "race"], [RACE.start, "start"], ["75–85", "goal"]);
       else {
         if (rs) stats.push([rs.km + " km", "run"]);
+        if (d.lifts) stats.push([d.lifts.length, "lifts"], [setsOf(d), "sets"]);
         if (d.rec) d.blocks.forEach(b => stats.push([b.mins + " min", b.title.toLowerCase()]));
-        else if (d.blocks) { const pre = d.blocks.filter(b => !b.after), post = d.blocks.filter(b => b.after); if (pre.length) stats.push([pre.reduce((a, b) => a + b.mins, 0) + " min", "rehab"]); if (post.length) stats.push([post.reduce((a, b) => a + b.mins, 0) + " min", "after"]); }
+        else if (d.blocks) { const pre = d.blocks.filter(b => !b.after), post = d.blocks.filter(b => b.after); if (pre.length && !d.lifts) stats.push([pre.reduce((a, b) => a + b.mins, 0) + " min", "rehab"]); if (post.length) stats.push([post.reduce((a, b) => a + b.mins, 0) + " min", "after"]); }
         stats.push([r.bed.split("–")[0], "in bed"]);
       }
     } else {
@@ -1507,7 +1511,7 @@ const RACE = (function () {
       const total = setsOf(d), done = gymDone(i), pct = total ? Math.round(done / total * 100) : 0;
       html += '<div class="prog"><div class="pbar"><span style="width:' + pct + '%"></span></div><div class="cap">' + done + ' of ' + total + ' sets' + (done ? (done >= total ? SEP + 'complete' : '') : SEP + 'not started') + '</div>' + (d.rule ? '<div class="rule"><i class="dot"></i><span>' + esc(d.rule) + '</span></div>' : "") + '</div>';
       let n = 1;
-      if (d.blocks) { html += blockSections(i, d, 0); n += d.blocks.length; }
+      if (d.blocks) { html += blockSections(i, d, 0, false); n += d.blocks.filter(b => !b.after).length; }
       if (d.warmup) {
         html += secHd(n++, "Warm-up", d.warmup.mins + " min" + SEP + d.warmup.items.length + " items", 'data-act="slide" data-to="0" data-row="0"') +
           '<div class="card list"><button type="button" class="row nothumb" data-act="wtog" aria-expanded="false"><span class="tx"><b>Warm-up</b><span>' + esc(d.warmup.note) + '</span></span><span class="rt">' + I.down + '</span></button>' +
@@ -1522,11 +1526,14 @@ const RACE = (function () {
             return '<button type="button" class="row" data-act="slide" data-to="' + idx + '" data-row="' + idx + '"><span class="th">' + thumb(e, alt ? "alt-" + e.id : e.id) + '</span><span class="tx"><b>' + esc(alt ? alt.name : e.name) + (alt ? '<span class="sw">Swapped</span>' : "") + '</b><span>' + rxTxt(e) + SEP + 'rest ' + fmtRest(e.rest) + '</span></span><span class="rt">' + (dn ? '<span>' + dn + '/' + e.sets + '</span>' : "") + ringSm(dn, e.sets) + '</span></button>';
           }).join("") + '</div>';
       });
+      if (d.blocks && d.blocks.some(b => b.after)) { html += blockSections(i, d, n - 1, true); n += d.blocks.filter(b => b.after).length; }
       html += secHd(n++, "Finish", "", 'data-act="slide" data-to="' + finishIdx(i) + '" data-row="' + finishIdx(i) + '"') +
         '<div class="card list"><button type="button" class="row nothumb" data-act="slide" data-to="' + finishIdx(i) + '"><span class="tx"><b>Finish &amp; share</b><span>' + (done >= total ? "All sets done" : "Sets ticked so far: " + done) + '</span></span><span class="rt">' + I.chev + '</span></button></div>';
+      if (d.race) html += raceSections(i, d, n);
       const nextE = d.lifts.find(e => doneOf(i, e) < e.sets);
-      const firstB = d.blocks ? d.blocks.map((b, bi) => blkDone(i, bi)).indexOf(false) : -1;
-      bar = firstB >= 0 && !done ? '<button type="button" class="btn" data-act="item" data-d="' + i + '" data-b="' + firstB + '" data-n="0">Begin ' + esc(d.blocks[firstB].title.toLowerCase()) + '</button>'
+      const bidx = (d.blocks || []).map((b, bi) => bi), firstB = bidx.find(bi => !d.blocks[bi].after && !blkDone(i, bi)), firstA = bidx.find(bi => d.blocks[bi].after && !blkDone(i, bi));
+      bar = firstB != null && !done ? '<button type="button" class="btn" data-act="item" data-d="' + i + '" data-b="' + firstB + '" data-n="0">Begin ' + esc(d.blocks[firstB].title.toLowerCase()) + '</button>'
+        : done >= total && firstA != null ? '<button type="button" class="btn" data-act="item" data-d="' + i + '" data-b="' + firstA + '" data-n="0">Begin ' + esc(d.blocks[firstA].title.toLowerCase()) + '</button>'
         : done >= total ? '<button type="button" class="btn done" data-act="slide" data-to="' + finishIdx(i) + '">Session complete</button>'
         : done ? '<button type="button" class="btn" data-act="slide" data-to="' + liftIdx(i, nextE) + '">Continue' + SEP + esc(GYM.swap[gk(i, nextE.id)] && ALT[nextE.id] ? ALT[nextE.id].name : nextE.name) + '</button>'
         : '<button type="button" class="btn" data-act="slide" data-to="0">' + (d.warmup ? "Begin with the warm-up" : "Begin the lifts") + '</button>';
@@ -1581,7 +1588,7 @@ const RACE = (function () {
       '<p class="how" style="margin:0 0 var(--gap);color:var(--fg2)">' + esc(O.lede) + '</p>';
     keys.forEach((k, x) => {
       const d = RACE.days[k], r = d.race, dt = new Date(k + "T00:00:00"), i = inWeek[k], pr = i != null ? raceProg(i) : null;
-      const parts = d.blocks.filter(b => !b.after).map(b => b.title + " " + b.mins + " min").concat(d.run ? [runStats(d.run).km + " km run"] : []).concat(d.blocks.filter(b => b.after).map(b => b.title + " " + b.mins + " min"));
+      const parts = d.blocks.filter(b => !b.after).map(b => b.title + " " + b.mins + " min").concat(d.run ? [runStats(d.run).km + " km run"] : d.lifts ? [d.lifts.length + " lifts" + SEP + setsOf(d) + " sets"] : []).concat(d.blocks.filter(b => b.after).map(b => b.title + " " + b.mins + " min"));
       const open = i != null ? 'data-act="open" data-d="' + i + '"' : null; const dayRef = i === TODAY ? "today" : i === TODAY + 1 ? "tomorrow" : "";
       html += '<div data-cat="' + d.cat + '">' + secHd(x + 1, WD[dt.getDay()] + " " + dt.getDate() + (dayRef ? SEP + dayRef : ""), r.tag, open) +
         '<div class="card list">' + (open ? '<button type="button" class="row nothumb" ' + open + '>' : '<div class="row nothumb">') + '<span class="tx"><b>' + esc(d.short) + '</b><span>' + esc(parts.join(SEP)) + '</span></span><span class="rt">' + (pr ? ringSm(pr.done, pr.total) : "") + (open ? I.chev : "") + '</span>' + (open ? '</button>' : '</div>') +
